@@ -10,6 +10,14 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Routes
+const vendorRoutes = require('./routes/vendorRoutes');
+const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+app.use('/api/vendors', vendorRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
+
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✅ MongoDB Atlas Connected!'))

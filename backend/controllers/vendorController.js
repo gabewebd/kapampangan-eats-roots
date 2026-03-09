@@ -42,3 +42,35 @@ exports.getVendorById = async (req, res) => {
         res.status(500).json({ error: 'Invalid ID or Server Error' });
     }
 };
+
+// GET: Heritage Sites
+exports.getHeritageSites = async (req, res) => {
+    try {
+        const sites = await Vendor.find({ isVerified: true, category: 'Heritage Site' }).limit(10);
+        res.status(200).json(sites);
+    } catch (err) {
+        res.status(500).json({ error: 'Fetch failed' });
+    }
+};
+
+// GET: Local Eateries
+exports.getEateries = async (req, res) => {
+    try {
+        const eateries = await Vendor.find({ isVerified: true, category: 'Local Eatery' }).limit(10);
+        res.status(200).json(eateries);
+    } catch (err) {
+        res.status(500).json({ error: 'Fetch failed' });
+    }
+};
+
+// GET: All Vendors for Map
+exports.getAllVendors = async (req, res) => {
+    try {
+        // Minimal data for map markers to optimize payload
+        const vendors = await Vendor.find({ isVerified: true })
+            .select('name category location rating images');
+        res.status(200).json(vendors);
+    } catch (err) {
+        res.status(500).json({ error: 'Fetch failed' });
+    }
+};

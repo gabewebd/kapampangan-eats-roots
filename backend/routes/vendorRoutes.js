@@ -13,4 +13,13 @@ router.get('/trending', vendorController.getTrending);
 // Route for "Vendor Detail Page"
 router.get('/:id', vendorController.getVendorById);
 
+// Route for "Heritage Sites"
+router.get('/filter/heritage', vendorController.getHeritageSites);
+
+// Route for "Local Eateries"
+router.get('/filter/eateries', vendorController.getEateries);
+
+// Route for "Explore Map"
+router.get('/explore/map', vendorController.getAllVendors);
+
 module.exports = router;

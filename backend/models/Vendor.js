@@ -11,6 +11,14 @@ const VendorSchema = new mongoose.Schema({
     },
     images: [String], // Array of Cloudinary URLs
     authenticityTraits: [String], // e.g., "Original family recipe"
+    menuHighlights: [{
+        name: String,
+        description: String,
+        price: Number,
+        image: String // Cloudinary URL
+    }],
+    rating: { type: Number, default: 0 },
+    reviewCount: { type: Number, default: 0 },
     isVerified: { type: Boolean, default: false }, // For Admin Approval
     createdAt: { type: Date, default: Date.now }
 });
