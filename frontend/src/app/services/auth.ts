@@ -7,11 +7,13 @@ export class AuthService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:5000/api/auth';
 
-  login(credentials: any): Observable<any> {
+  login(credentials: { username: string; password: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       tap((res: any) => {
-        // Save token to protect the single-page admin view
-        if (res.token) localStorage.setItem('admin_token', res.token);
+        if (res.token) {
+          localStorage.setItem('admin_token', res.token);
+          localStorage.setItem('admin_user', JSON.stringify(res.admin));
+        }
       })
     );
   }
@@ -22,5 +24,10 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_user');
+  }
+
+  getToken() {
+    return localStorage.getItem('admin_token');
   }
 }

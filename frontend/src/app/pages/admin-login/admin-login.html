@@ -1,1 +1,59 @@
-<p>admin-login works!</p>
+<div class="min-h-screen bg-[#FDF9F0] flex items-center justify-center p-6 relative overflow-hidden">
+    <!-- Decorative background elements -->
+    <div
+        class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50">
+    </div>
+    <div
+        class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-yellow-50 rounded-full blur-3xl opacity-50">
+    </div>
+
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-gray-100 p-10 relative z-10">
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center gap-2 mb-6">
+                <span class="text-yellow-400 text-2xl">★★★</span>
+                <h1 class="text-2xl font-bold font-serif text-blue-800 italic">Angeles Eats & Roots</h1>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2 tracking-tight">Admin Portal</h2>
+            <p class="text-gray-500 font-medium">Verify heritage and culinary excellence</p>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="space-y-6">
+            <div *ngIf="error"
+                class="bg-red-50 text-red-700 p-4 rounded-xl text-sm font-bold border border-red-100 animate-in fade-in slide-in-from-top-2">
+                {{ error }}
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-sm font-bold text-gray-700 ml-1">Username</label>
+                <div class="relative">
+                    <lucide-icon name="user"
+                        class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5"></lucide-icon>
+                    <input type="text" name="username" [(ngModel)]="credentials.username" required
+                        class="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none font-medium text-gray-900"
+                        placeholder="Enter admin username">
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-sm font-bold text-gray-700 ml-1">Password</label>
+                <div class="relative">
+                    <lucide-icon name="lock"
+                        class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5"></lucide-icon>
+                    <input type="password" name="password" [(ngModel)]="credentials.password" required
+                        class="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none font-medium text-gray-900"
+                        placeholder="Enter secure password">
+                </div>
+            </div>
+
+            <button type="submit" [disabled]="!loginForm.valid || loading"
+                class="w-full py-4 bg-blue-800 text-white rounded-2xl font-bold text-lg shadow-xl shadow-blue-900/10 hover:bg-blue-900 active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3">
+                <lucide-icon *ngIf="loading" name="loader" class="w-5 h-5 animate-spin"></lucide-icon>
+                {{ loading ? 'Authenticating...' : 'Sign In to Dashboard' }}
+            </button>
+        </form>
+
+        <div class="mt-10 pt-8 border-t border-gray-50 text-center">
+            <p class="text-sm text-gray-400 font-medium italic">© 2026 Angeles City Heritage & Discovery Platform</p>
+        </div>
+    </div>
+</div>
