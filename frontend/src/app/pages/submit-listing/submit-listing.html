@@ -1,119 +1,152 @@
-<div class="w-full min-h-screen bg-[#FDF9F0] pb-[100px] md:pb-16 font-sans">
+<div class="w-full min-h-screen bg-[#FDF9F0] pb-[100px] md:pb-24 md:pt-[140px] font-sans md:px-8 lg:px-12 relative overflow-hidden">
   
-  <!-- Red Hero Header -->
-  <div class="bg-gradient-to-br from-angeles-red to-red-700 text-white rounded-b-[48px] md:rounded-[40px] pt-16 md:pt-20 pb-16 md:pb-24 px-6 md:px-16 relative overflow-hidden shadow-2xl md:mt-6 md:max-w-[1440px] md:mx-auto lg:mx-12 xl:mx-auto">
-    <!-- Decorative background elements -->
-    <div class="absolute top-[-20%] right-[-10%] w-64 md:w-96 h-64 md:h-96 bg-white/10 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-[-30%] left-[10%] w-48 h-48 bg-black/10 rounded-full blur-2xl"></div>
+  <!-- Subtle background glow for desktop -->
+  <div class="hidden md:block absolute top-0 right-0 w-[800px] h-[800px] bg-red-50 rounded-full blur-[100px] -z-10 translate-x-1/2 -translate-y-1/2"></div>
+  <div class="hidden md:block absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-50 rounded-full blur-[100px] -z-10 -translate-x-1/3 translate-y-1/3"></div>
 
-    <div class="relative z-10 md:max-w-3xl md:mx-auto md:text-center flex flex-col md:items-center">
-      <div class="flex items-center gap-1.5 mb-4">
-        <lucide-icon name="star" class="text-angeles-yellow fill-angeles-yellow w-3.5 h-3.5 md:w-5 md:h-5" [strokeWidth]="0"></lucide-icon>
-        <lucide-icon name="star" class="text-angeles-yellow fill-angeles-yellow w-3.5 h-3.5 md:w-5 md:h-5" [strokeWidth]="0"></lucide-icon>
-        <lucide-icon name="star" class="text-angeles-yellow fill-angeles-yellow w-3.5 h-3.5 md:w-5 md:h-5" [strokeWidth]="0"></lucide-icon>
-      </div>
-      <h1 class="font-serif text-3xl md:text-5xl font-bold mb-3 md:mb-5 tracking-tight drop-shadow-md">Join Angeles Eats &amp; Roots</h1>
-      <p class="text-white/95 text-[15px] md:text-lg max-w-[280px] md:max-w-xl font-medium leading-relaxed drop-shadow-sm">
-        Got a beloved local eatery? We'd love to share your story with the community.
-      </p>
-    </div>
-  </div>
-
-  <!-- Form Container -->
-  <div class="px-6 md:px-8 -mt-8 md:-mt-12 relative z-20 max-w-2xl mx-auto">
-    <div class="bg-white md:bg-white/80 md:backdrop-blur-xl rounded-[32px] md:shadow-2xl md:shadow-blue-900/5 md:border md:border-white/50 p-1 md:p-8">
+  <!-- Main Split Card Container -->
+  <div class="max-w-[1280px] mx-auto md:bg-white/80 md:backdrop-blur-2xl md:rounded-[40px] md:shadow-2xl md:shadow-red-900/10 md:flex border border-white/60 relative z-10">
+    
+    <!-- Red Hero Section (Top on mobile, Left on desktop) -->
+    <div class="bg-gradient-to-br from-angeles-red to-red-800 text-white rounded-b-[48px] md:rounded-l-[40px] md:rounded-tr-none md:w-[45%] lg:w-[40%] pt-16 md:pt-24 pb-16 md:pb-24 px-6 md:px-12 lg:px-16 relative overflow-hidden flex flex-col md:justify-center shadow-lg md:shadow-none">
+      <!-- Decorative background elements -->
+      <div class="absolute top-[-20%] right-[-10%] w-64 md:w-96 h-64 md:h-96 bg-white/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-black/15 rounded-full blur-2xl"></div>
       
-      <!-- Info Banner -->
-      <div class="bg-[#FFF8E7] rounded-2xl p-5 mb-8 flex items-start gap-4 border border-yellow-100 shadow-sm mt-0 md:mt-2">
-        <div class="bg-angeles-yellow/20 p-2.5 rounded-full shrink-0 mt-1 shadow-sm">
-          <lucide-icon name="sparkles" class="text-angeles-red w-5 h-5"></lucide-icon>
+      <!-- Pattern overlay (aesthetic touch) -->
+      <div class="absolute inset-0 opacity-10 mix-blend-overlay" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+
+      <div class="relative z-10 md:max-w-md flex flex-col">
+        <div class="flex items-center gap-1.5 mb-5">
+          <lucide-icon name="star" class="text-angeles-yellow fill-angeles-yellow w-4 h-4 md:w-5 md:h-5" [strokeWidth]="0"></lucide-icon>
+          <lucide-icon name="star" class="text-angeles-yellow fill-angeles-yellow w-4 h-4 md:w-5 md:h-5" [strokeWidth]="0"></lucide-icon>
+          <lucide-icon name="star" class="text-angeles-yellow fill-angeles-yellow w-4 h-4 md:w-5 md:h-5" [strokeWidth]="0"></lucide-icon>
         </div>
-        <p class="text-[14px] md:text-[15px] text-gray-700 leading-relaxed font-medium">
-          Every small eatery has a story worth telling. Whether it's your lola's recipe or a family tradition — <a href="#" class="text-angeles-blue font-bold hover:underline">you belong here</a>.
+        <h1 class="font-serif text-3xl md:text-5xl lg:text-5xl font-bold mb-4 md:mb-6 tracking-tight drop-shadow-md leading-tight">Join Angeles Eats &amp; Roots</h1>
+        <p class="text-white/95 text-[15px] md:text-lg lg:text-xl md:max-w-xl font-medium leading-relaxed drop-shadow-sm mb-8 md:mb-12">
+          Got a beloved local eatery? We'd love to share your story with the community. Let's map out the true flavors of our heritage together.
         </p>
-      </div>
-
-      <!-- Form Fields -->
-      <form class="space-y-7 md:space-y-8">
         
-        <!-- Upload Photos -->
-        <div>
-          <label class="flex items-center gap-2 text-angeles-blue font-bold text-[15px] md:text-base mb-1.5">
-            <lucide-icon name="camera" class="w-5 h-5"></lucide-icon> Upload Photos
-          </label>
-          <p class="text-[13px] md:text-sm text-gray-500 mb-3 font-medium">Show off your food, your place, or your team. Up to 4 photos.</p>
-          <button type="button" class="w-[88px] h-[88px] md:w-[100px] md:h-[100px] rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 transition-colors flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-angeles-blue hover:border-blue-200">
-            <lucide-icon name="camera" class="w-6 h-6"></lucide-icon>
-            <span class="text-[12px] font-semibold">Add</span>
-          </button>
-        </div>
-
-        <!-- Business Name -->
-        <div>
-          <label class="flex items-center gap-2 text-angeles-blue font-bold text-[15px] md:text-base mb-2">
-            <lucide-icon name="store" class="w-5 h-5"></lucide-icon> Business Name
-          </label>
-          <input type="text" placeholder="e.g., Aling Nena's Carinderia" 
-                 class="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-[15px] md:text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-angeles-blue/30 focus:border-angeles-blue transition-all shadow-sm" />
-        </div>
-
-        <!-- Years in Operation -->
-        <div>
-          <label class="flex items-center gap-2 text-angeles-blue font-bold text-[15px] md:text-base mb-2">
-            <lucide-icon name="clock" class="w-5 h-5"></lucide-icon> Years in Operation
-          </label>
-          <input type="text" placeholder="e.g., 15 years, Since 1998, Just started" 
-                 class="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-[15px] md:text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-angeles-blue/30 focus:border-angeles-blue transition-all shadow-sm" />
-          <p class="text-[12px] md:text-[13px] text-gray-400 mt-2 ml-1 font-medium">It doesn't matter if you're new — every journey starts somewhere!</p>
-        </div>
-
-        <!-- Cultural Story -->
-        <div>
-          <label class="flex items-center gap-2 text-angeles-blue font-bold text-[15px] md:text-base mb-1.5">
-            <lucide-icon name="book-open" class="w-5 h-5"></lucide-icon> Your Cultural Story
-          </label>
-          <p class="text-[13px] md:text-sm text-gray-500 mb-3 font-medium">What's the heart behind your eatery? A family recipe, a neighborhood tradition, a dream come true?</p>
-          <div class="relative">
-            <textarea placeholder="My lola started cooking sisig for our neighbors in 1990..." rows="4"
-                      class="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-[15px] md:text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-angeles-blue/30 focus:border-angeles-blue transition-all shadow-sm resize-none"></textarea>
-            <div class="absolute bottom-3 right-4 text-[11px] font-bold text-gray-300">0/500</div>
-          </div>
-        </div>
-
-        <!-- Heritage Checkbox -->
-        <label class="flex items-start gap-4 p-5 rounded-2xl border border-gray-200 bg-white shadow-sm cursor-pointer hover:border-gray-300 transition-colors group">
-          <div class="flex items-center justify-center w-6 h-6 rounded-md border-2 border-gray-300 bg-white shrink-0 mt-0.5 group-hover:border-angeles-blue transition-colors">
-            <!-- Unchecked state box -->
-          </div>
-          <div>
-            <div class="flex items-center gap-2 font-bold text-[15px] text-gray-800 mb-1 group-hover:text-angeles-blue transition-colors">
-              <lucide-icon name="heart" class="w-4 h-4 text-gray-400 group-hover:text-angeles-blue transition-colors"></lucide-icon> 
-              Family-owned / Heritage-based
+        <!-- Trust Indicators Only on Desktop -->
+        <div class="hidden md:flex flex-col gap-5 mt-auto pt-8 border-t border-white/20">
+          <div class="flex items-center gap-4">
+            <div class="bg-white/20 p-2.5 rounded-xl backdrop-blur-sm"><lucide-icon name="shield-check" class="w-5 h-5 text-white"></lucide-icon></div>
+            <div>
+              <div class="font-bold text-base">Community Verified</div>
+              <div class="text-white/80 text-sm">Reviewed by locals within 48h</div>
             </div>
-            <p class="text-[13px] text-gray-500 leading-relaxed font-medium">Check this if your eatery is family-run, uses traditional recipes, or is rooted in Kapampangan heritage. This helps us highlight your cultural story.</p>
           </div>
-        </label>
-
-        <!-- Divider -->
-        <div class="flex items-center gap-4 py-4">
-          <div class="h-px bg-gray-200 flex-1"></div>
-          <span class="text-[10px] md:text-xs font-bold tracking-widest text-gray-300 uppercase">Ready?</span>
-          <div class="h-px bg-gray-200 flex-1"></div>
+          <div class="flex items-center gap-4">
+            <div class="bg-white/20 p-2.5 rounded-xl backdrop-blur-sm"><lucide-icon name="heart" class="w-5 h-5 text-angeles-yellow fill-angeles-yellow" [strokeWidth]="0"></lucide-icon></div>
+            <div>
+              <div class="font-bold text-base">Always Free</div>
+              <div class="text-white/80 text-sm">We don't charge for local listings</div>
+            </div>
+          </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Submit Button -->
-        <button type="button" class="w-full bg-[#f4f6f8] text-gray-400 hover:bg-angeles-blue hover:text-white font-bold text-[15px] md:text-base py-4 md:py-5 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-900/20 active:scale-[0.98]">
-          <lucide-icon name="shield-check" class="w-5 h-5"></lucide-icon>
-          Submit for Verification
-        </button>
+    <!-- Form Section (Bottom on mobile, Right on desktop) -->
+    <div class="px-6 md:px-0 -mt-10 md:mt-0 relative z-20 md:w-[55%] lg:w-[60%] flex flex-col justify-center">
+      <div class="bg-white md:bg-transparent rounded-[32px] md:rounded-none shadow-2xl md:shadow-none p-6 md:px-12 lg:px-20 md:py-16">
         
-        <div class="text-center font-medium">
-          <p class="text-[13px] md:text-sm text-gray-400 mb-1">Our local community reviewers will verify your listing within 2-3 days.</p>
-          <p class="text-[12px] md:text-[13px] text-gray-300">No fees. No hidden charges. Just good food and good stories.</p>
+        <!-- Info Banner -->
+        <div class="bg-yellow-50 md:bg-[#FFF8E7]/60 rounded-2xl p-5 mb-8 flex items-start gap-4 border border-yellow-100 shadow-sm transition-transform hover:-translate-y-1 duration-300">
+          <div class="bg-angeles-yellow/20 p-2.5 rounded-full shrink-0 mt-0.5 shadow-sm">
+            <lucide-icon name="sparkles" class="text-angeles-yellow w-5 h-5 fill-angeles-yellow" [strokeWidth]="1"></lucide-icon>
+          </div>
+          <p class="text-[14px] md:text-[15px] text-gray-700 leading-relaxed font-medium">
+            Every small eatery has a story worth telling. Whether it's your lola's recipe or a family tradition — <a href="#" class="text-angeles-blue font-bold hover:underline transition-all">you belong here</a>.
+          </p>
         </div>
 
-      </form>
+        <!-- Form Fields -->
+        <form class="space-y-7 md:space-y-8">
+          
+          <!-- Upload Photos -->
+          <div>
+            <label class="flex items-center gap-2 text-angeles-blue font-bold text-[15px] md:text-[17px] mb-1.5">
+              <lucide-icon name="camera" class="w-5 h-5 stroke-[2.5px]"></lucide-icon> Upload Photos
+            </label>
+            <p class="text-[13px] md:text-sm text-gray-500 mb-3 font-medium">Show off your food, your place, or your team. Up to 4 photos.</p>
+            <button type="button" class="w-[88px] h-[88px] md:w-[110px] md:h-[110px] rounded-[20px] border-2 border-dashed border-gray-300 bg-gray-50/50 hover:bg-blue-50/50 backdrop-blur-sm transition-all duration-300 flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:text-angeles-blue hover:border-angeles-blue hover:scale-105 hover:shadow-lg shadow-blue-900/5 group">
+              <lucide-icon name="camera" class="w-6 h-6 md:w-8 md:h-8 group-hover:scale-110 transition-transform"></lucide-icon>
+              <span class="text-[12px] md:text-[13px] font-bold">Add Photo</span>
+            </button>
+          </div>
 
+          <!-- Business Name -->
+          <div>
+            <label class="flex items-center gap-2 text-angeles-blue font-bold text-[15px] md:text-[17px] mb-2">
+              <lucide-icon name="store" class="w-5 h-5 stroke-[2.5px]"></lucide-icon> Business Name
+            </label>
+            <input type="text" placeholder="e.g., Aling Nena's Carinderia" 
+                   class="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-4 lg:py-4 text-[15px] md:text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-angeles-blue/10 focus:border-angeles-blue focus:bg-white transition-all shadow-sm hover:border-gray-300" />
+          </div>
+
+          <!-- Years in Operation -->
+          <div>
+            <label class="flex items-center gap-2 text-angeles-blue font-bold text-[15px] md:text-[17px] mb-2">
+              <lucide-icon name="clock" class="w-5 h-5 stroke-[2.5px]"></lucide-icon> Years in Operation
+            </label>
+            <input type="text" placeholder="e.g., 15 years, Since 1998, Just started" 
+                   class="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-4 text-[15px] md:text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-angeles-blue/10 focus:border-angeles-blue focus:bg-white transition-all shadow-sm hover:border-gray-300" />
+            <p class="text-[12px] md:text-[13px] text-gray-400 mt-2 ml-1 font-medium italic">It doesn't matter if you're new — every journey starts somewhere!</p>
+          </div>
+
+          <!-- Cultural Story -->
+          <div>
+            <label class="flex items-center gap-2 text-angeles-blue font-bold text-[15px] md:text-[17px] mb-1.5">
+              <lucide-icon name="book-open" class="w-5 h-5 stroke-[2.5px]"></lucide-icon> Your Cultural Story
+            </label>
+            <p class="text-[13px] md:text-sm text-gray-500 mb-3 font-medium">What's the heart behind your eatery? A family recipe, a neighborhood tradition, a dream come true?</p>
+            <div class="relative group">
+              <textarea placeholder="My lola started cooking sisig for our neighbors in 1990..." rows="4"
+                        class="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-4 pb-8 text-[15px] md:text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-angeles-blue/10 focus:border-angeles-blue focus:bg-white transition-all shadow-sm hover:border-gray-300 resize-none"></textarea>
+              <div class="absolute bottom-3 right-4 text-[11px] font-bold text-gray-400 group-focus-within:text-angeles-blue transition-colors">0/500</div>
+            </div>
+          </div>
+
+          <!-- Heritage Checkbox -->
+          <label class="flex items-start gap-4 p-5 md:p-6 rounded-2xl border border-gray-200 bg-white shadow-sm cursor-pointer hover:border-angeles-blue/50 hover:shadow-md transition-all group overflow-hidden relative">
+            <!-- decorative accent line -->
+            <div class="absolute left-0 top-0 bottom-0 w-1 bg-angeles-blue opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div class="flex items-center justify-center w-6 h-6 rounded-md border-2 border-gray-300 bg-white shrink-0 mt-0.5 group-hover:border-angeles-blue transition-colors relative">
+               <!-- Unchecked state box -->
+            </div>
+            <div>
+              <div class="flex items-center gap-2 font-bold text-[15px] md:text-[16px] text-gray-800 mb-1 group-hover:text-angeles-blue transition-colors">
+                <lucide-icon name="heart" class="w-4 h-4 text-gray-400 group-hover:text-angeles-red group-hover:fill-angeles-red transition-all duration-300 group-hover:scale-110"></lucide-icon> 
+                Family-owned / Heritage-based
+              </div>
+              <p class="text-[13px] md:text-[14px] text-gray-500 leading-relaxed font-medium">Check this if your eatery is family-run, uses traditional recipes, or is rooted in Kapampangan heritage. This helps us highlight your cultural story.</p>
+            </div>
+          </label>
+
+          <!-- Divider -->
+          <div class="flex items-center gap-4 py-2 md:py-4 opacity-70">
+            <div class="h-px bg-gray-200 flex-1"></div>
+            <span class="text-[10px] md:text-xs font-bold tracking-widest text-gray-400 uppercase">Ready to join?</span>
+            <div class="h-px bg-gray-200 flex-1"></div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="button" class="w-full bg-angeles-blue text-white font-bold text-[15px] md:text-[17px] py-4 md:py-5 rounded-2xl flex items-center justify-center gap-2 tracking-wide transition-all duration-300 shadow-xl shadow-blue-900/20 hover:shadow-2xl hover:shadow-blue-900/40 hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] group overflow-hidden relative">
+            <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+            <lucide-icon name="shield-check" class="w-5 h-5 md:w-6 md:h-6 relative z-10"></lucide-icon>
+            <span class="relative z-10">Submit for Verification</span>
+          </button>
+          
+          <div class="text-center font-medium pt-2">
+            <p class="text-[13px] md:text-[14px] text-gray-500 mb-1">Our local community reviewers will verify your listing within 2-3 days.</p>
+            <p class="text-[12px] md:text-[13px] text-gray-400 font-semibold bg-gray-100 inline-block px-3 py-1 rounded-full">No fees. No hidden charges. Just good food.</p>
+          </div>
+
+        </form>
+
+      </div>
     </div>
   </div>
 </div>

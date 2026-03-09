@@ -1,99 +1,125 @@
-<div class="w-full min-h-screen bg-[#FDF9F0] pb-[100px] md:pb-16 font-sans">
+<div class="w-full min-h-screen bg-[#FDF9F0] pb-[100px] md:pb-24 md:pt-[140px] font-sans md:px-8 lg:px-12 relative overflow-hidden flex flex-col items-center">
   
-  <!-- Blue Hero Header -->
-  <div class="bg-angeles-blue text-white rounded-b-[48px] md:rounded-[40px] pt-16 md:pt-20 pb-16 md:pb-20 px-8 relative overflow-hidden shadow-2xl md:mt-6 md:max-w-[1440px] md:mx-auto lg:mx-12 xl:mx-auto">
-    <!-- Decorative background elements -->
-    <div class="absolute top-[-10%] right-[-5%] w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
-    <div class="absolute bottom-[-20%] left-[20%] w-64 h-64 bg-black/10 rounded-full blur-3xl"></div>
+  <!-- Subtle glowing background for desktop -->
+  <div class="hidden md:block absolute top-[10%] left-1/2 w-[800px] h-[800px] bg-angeles-blue/10 rounded-full blur-[120px] -z-10 -translate-x-1/2 -translate-y-1/2"></div>
+  <div class="hidden md:block absolute bottom-0 right-0 w-[500px] h-[500px] bg-angeles-yellow/10 rounded-full blur-[100px] -z-10 translate-x-1/3 translate-y-1/3"></div>
 
-    <div class="relative z-10 md:max-w-2xl md:mx-auto">
-      <div class="flex justify-between items-center mb-8 md:mb-10">
-        <h1 class="font-serif text-[32px] md:text-4xl font-bold tracking-tight drop-shadow-sm">Profile</h1>
-        <button class="p-2 hover:bg-white/10 rounded-full transition-colors active:scale-95">
-          <lucide-icon name="settings" class="w-6 h-6 text-white/90"></lucide-icon>
-        </button>
-      </div>
+  <!-- Main Split Card Container -->
+  <div class="w-full max-w-[1100px] md:bg-white/80 md:backdrop-blur-2xl md:rounded-[40px] md:shadow-2xl md:shadow-blue-900/10 md:flex border border-white/60 relative z-10 overflow-hidden">
+    
+    <!-- Blue Sidebar (Top on mobile, Left on desktop) -->
+    <div class="bg-gradient-to-b from-angeles-blue to-[#1a3a5a] text-white rounded-b-[48px] md:rounded-none md:w-[40%] lg:w-[35%] pt-16 md:pt-20 pb-16 md:pb-20 px-8 lg:px-12 relative overflow-hidden shadow-2xl md:shadow-none flex flex-col">
+      <!-- Decorative background elements -->
+      <div class="absolute top-[-10%] right-[-5%] w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
+      <div class="absolute bottom-[-20%] left-[20%] w-64 h-64 bg-black/20 rounded-full blur-3xl"></div>
+      
+      <!-- Subtle grid pattern overlay -->
+      <div class="absolute inset-0 opacity-10 mix-blend-overlay" style="background-image: linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px); background-size: 20px 20px;"></div>
 
-      <div class="flex items-center gap-5 md:gap-6">
-        <!-- Avatar Block -->
-        <div class="w-20 h-20 md:w-24 md:h-24 bg-angeles-yellow rounded-2xl md:rounded-3xl flex items-center justify-center font-serif text-[28px] md:text-3xl font-bold text-angeles-blue shadow-lg relative transform transition-transform hover:scale-105">
-           MR
-           <!-- Online / Verification indicator -->
-           <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-angeles-blue rounded-full"></div>
+      <div class="relative z-10 w-full">
+        <div class="flex justify-between items-center mb-8 md:mb-12">
+          <h1 class="font-serif text-[32px] md:text-4xl font-bold tracking-tight drop-shadow-sm">Profile</h1>
+          <button class="p-2 hover:bg-white/10 rounded-full transition-colors active:scale-95 group">
+            <lucide-icon name="settings" class="w-6 h-6 text-white/90 group-hover:rotate-90 transition-transform duration-500"></lucide-icon>
+          </button>
         </div>
-        
-        <!-- User Info -->
-        <div>
-          <h2 class="text-2xl md:text-[28px] font-bold mb-0.5 md:mb-1">Maria Reyes</h2>
-          <p class="text-white/80 text-[14px] md:text-base mb-2 md:mb-3 font-medium">Local Explorer since 2024</p>
-          <div class="flex items-center gap-1.5 text-[12px] md:text-sm font-bold bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full inline-flex border border-white/10">
-            <lucide-icon name="star" class="w-3.5 h-3.5 text-angeles-yellow fill-angeles-yellow"></lucide-icon>
-            Community Contributor
+
+        <div class="flex items-center gap-5 md:flex-col md:items-start md:gap-6">
+          <!-- Avatar Block -->
+          <div class="w-20 h-20 md:w-28 md:h-28 bg-gradient-to-tr from-angeles-yellow to-yellow-200 rounded-2xl md:rounded-[28px] flex items-center justify-center font-serif text-[28px] md:text-4xl font-bold text-angeles-blue shadow-xl relative transform transition-transform hover:scale-105 border-2 border-white/20">
+             MR
+             <!-- Online / Verification indicator -->
+             <div class="absolute -bottom-1.5 -right-1.5 md:-bottom-2 md:-right-2 w-5 h-5 md:w-6 md:h-6 bg-green-500 border-2 border-angeles-blue rounded-full shadow-sm"></div>
+          </div>
+          
+          <!-- User Info -->
+          <div class="md:w-full">
+            <h2 class="text-2xl md:text-3xl font-bold mb-0.5 md:mb-2 leading-tight">Maria Reyes</h2>
+            <p class="text-white/80 text-[14px] md:text-[15px] mb-3 md:mb-5 font-medium">Local Explorer since 2024</p>
+            <div class="flex items-center gap-1.5 text-[12px] md:text-[13px] font-bold bg-white/10 backdrop-blur-md px-3 md:px-4 py-1.5 md:py-2 rounded-full inline-flex border border-white/15 shadow-inner">
+              <lucide-icon name="star" class="w-3.5 h-3.5 md:w-4 md:h-4 text-angeles-yellow fill-angeles-yellow"></lucide-icon>
+              Community Contributor
+            </div>
           </div>
         </div>
+        
+        <!-- Desktop only decorative text -->
+        <div class="hidden md:block mt-auto pt-16">
+          <p class="text-white/40 text-sm italic font-medium">"Food is our common ground, a universal experience."</p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Content Container -->
-  <div class="px-6 md:px-8 -mt-8 md:-mt-10 relative z-20 max-w-2xl mx-auto space-y-4 md:space-y-6">
+    <!-- Right Content Area -->
+    <div class="px-6 md:px-10 lg:px-16 -mt-8 md:mt-0 relative z-20 md:w-[60%] lg:w-[65%] py-2 md:py-16 flex flex-col justify-center">
+      <div class="bg-white md:bg-transparent rounded-[32px] md:rounded-none shadow-2xl md:shadow-none p-2 md:p-0 space-y-4 md:space-y-10">
+        
+        <!-- Stats Card -->
+        <div class="bg-white rounded-[28px] md:rounded-[32px] shadow-lg shadow-blue-900/5 md:shadow-xl md:shadow-blue-900/10 p-6 md:p-8 flex justify-between items-center border border-gray-100/50 hover:shadow-2xl transition-shadow md:bg-gradient-to-r md:from-white md:to-gray-50/50">
+          <div class="text-center flex-1 group">
+            <div class="text-2xl md:text-4xl font-black text-angeles-blue mb-1 group-hover:scale-110 transition-transform origin-bottom">23</div>
+            <div class="text-[12px] md:text-[14px] text-gray-500 font-bold uppercase tracking-wider">Visited</div>
+          </div>
+          <div class="w-px h-10 md:h-12 bg-gray-200"></div>
+          <div class="text-center flex-1 group">
+            <div class="text-2xl md:text-4xl font-black text-angeles-blue mb-1 group-hover:scale-110 transition-transform origin-bottom">15</div>
+            <div class="text-[12px] md:text-[14px] text-gray-500 font-bold uppercase tracking-wider">Saved</div>
+          </div>
+          <div class="w-px h-10 md:h-12 bg-gray-200"></div>
+          <div class="text-center flex-1 group">
+            <div class="text-2xl md:text-4xl font-black text-angeles-blue mb-1 group-hover:scale-110 transition-transform origin-bottom">8</div>
+            <div class="text-[12px] md:text-[14px] text-gray-500 font-bold uppercase tracking-wider">Reviews</div>
+          </div>
+        </div>
+
+        <!-- Action Links Grid -->
+        <div class="md:grid md:grid-cols-2 md:gap-4 space-y-4 md:space-y-0">
+          
+          <button class="w-full bg-white md:bg-gray-50/50 rounded-[24px] shadow-sm hover:shadow-md p-5 md:p-6 flex items-center justify-between border border-gray-100 hover:border-gray-200 md:hover:bg-white group transition-all duration-300">
+            <div class="flex items-center gap-4">
+              <div class="bg-red-50 p-3 rounded-2xl group-hover:scale-110 group-hover:bg-red-100 transition-all">
+                <lucide-icon name="heart" class="w-5 h-5 text-angeles-red"></lucide-icon>
+              </div>
+              <span class="font-bold text-[16px] md:text-[17px] text-gray-800 group-hover:text-angeles-blue transition-colors">Favorites</span>
+            </div>
+            <lucide-icon name="chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-angeles-blue transition-colors group-hover:translate-x-1 transform"></lucide-icon>
+          </button>
+
+          <button class="w-full bg-white md:bg-gray-50/50 rounded-[24px] shadow-sm hover:shadow-md p-5 md:p-6 flex items-center justify-between border border-gray-100 hover:border-gray-200 md:hover:bg-white group transition-all duration-300">
+            <div class="flex items-center gap-4">
+              <div class="bg-blue-50 p-3 rounded-2xl group-hover:scale-110 group-hover:bg-blue-100 transition-all">
+                <lucide-icon name="bookmark" class="w-5 h-5 text-angeles-blue"></lucide-icon>
+              </div>
+              <span class="font-bold text-[16px] md:text-[17px] text-gray-800 group-hover:text-angeles-blue transition-colors">Saved Places</span>
+            </div>
+            <lucide-icon name="chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-angeles-blue transition-colors group-hover:translate-x-1 transform"></lucide-icon>
+          </button>
+
+          <button class="w-full bg-white md:bg-gray-50/50 rounded-[24px] shadow-sm hover:shadow-md p-5 md:p-6 flex items-center justify-between border border-gray-100 hover:border-gray-200 md:hover:bg-white group transition-all duration-300 md:col-span-2">
+            <div class="flex items-center gap-4">
+              <div class="bg-yellow-50 p-3 rounded-2xl group-hover:scale-110 group-hover:bg-yellow-100 transition-all">
+                <lucide-icon name="map-pin" class="w-5 h-5 text-angeles-yellow"></lucide-icon>
+              </div>
+              <span class="font-bold text-[16px] md:text-[17px] text-gray-800 group-hover:text-angeles-blue transition-colors">My Submissions</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="bg-gray-100 text-gray-500 font-bold text-xs px-2.5 py-1 rounded-full hidden md:block group-hover:bg-blue-50 group-hover:text-angeles-blue transition-colors">2 Pending</span>
+              <lucide-icon name="chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-angeles-blue transition-colors group-hover:translate-x-1 transform"></lucide-icon>
+            </div>
+          </button>
+
+        </div>
+
+        <!-- Sign Out -->
+        <div class="pt-6 md:pt-4 flex justify-center md:justify-end pb-4 border-t border-gray-100/0 md:border-gray-100 mt-8 md:mt-12">
+          <button class="flex items-center gap-2 text-gray-400 hover:text-red-500 font-bold text-[15px] md:text-base transition-colors group px-4 py-2 rounded-full hover:bg-red-50">
+            <lucide-icon name="log-out" class="w-5 h-5 group-hover:-translate-x-1 transition-transform"></lucide-icon>
+            Sign Out
+          </button>
+        </div>
+
+      </div>
+    </div>
     
-    <!-- Stats Card -->
-    <div class="bg-white rounded-[28px] shadow-lg shadow-blue-900/5 p-6 md:p-8 flex justify-between items-center border border-gray-100/50 hover:shadow-xl transition-shadow">
-      <div class="text-center flex-1">
-        <div class="text-2xl md:text-3xl font-bold text-angeles-blue mb-1">23</div>
-        <div class="text-[12px] md:text-[14px] text-gray-500 font-medium">Visited</div>
-      </div>
-      <div class="w-px h-10 bg-gray-200"></div>
-      <div class="text-center flex-1">
-        <div class="text-2xl md:text-3xl font-bold text-angeles-blue mb-1">15</div>
-        <div class="text-[12px] md:text-[14px] text-gray-500 font-medium">Saved</div>
-      </div>
-      <div class="w-px h-10 bg-gray-200"></div>
-      <div class="text-center flex-1">
-        <div class="text-2xl md:text-3xl font-bold text-angeles-blue mb-1">8</div>
-        <div class="text-[12px] md:text-[14px] text-gray-500 font-medium">Reviews</div>
-      </div>
-    </div>
-
-    <!-- Action Links -->
-    <button class="w-full bg-white rounded-[24px] shadow-sm hover:shadow-md p-5 md:p-6 flex items-center justify-between border border-gray-100 group transition-all">
-      <div class="flex items-center gap-4">
-        <div class="bg-red-50 p-3 rounded-2xl group-hover:scale-110 transition-transform">
-          <lucide-icon name="heart" class="w-5 h-5 text-angeles-red"></lucide-icon>
-        </div>
-        <span class="font-bold text-[16px] md:text-lg text-gray-800">Favorites</span>
-      </div>
-      <lucide-icon name="chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-angeles-blue transition-colors group-hover:translate-x-1 transform"></lucide-icon>
-    </button>
-
-    <button class="w-full bg-white rounded-[24px] shadow-sm hover:shadow-md p-5 md:p-6 flex items-center justify-between border border-gray-100 group transition-all">
-      <div class="flex items-center gap-4">
-        <div class="bg-blue-50 p-3 rounded-2xl group-hover:scale-110 transition-transform">
-          <lucide-icon name="bookmark" class="w-5 h-5 text-angeles-blue"></lucide-icon>
-        </div>
-        <span class="font-bold text-[16px] md:text-lg text-gray-800">Saved Places</span>
-      </div>
-      <lucide-icon name="chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-angeles-blue transition-colors group-hover:translate-x-1 transform"></lucide-icon>
-    </button>
-
-    <button class="w-full bg-white rounded-[24px] shadow-sm hover:shadow-md p-5 md:p-6 flex items-center justify-between border border-gray-100 group transition-all">
-      <div class="flex items-center gap-4">
-        <div class="bg-yellow-50 p-3 rounded-2xl group-hover:scale-110 transition-transform">
-          <lucide-icon name="map-pin" class="w-5 h-5 text-angeles-yellow"></lucide-icon>
-        </div>
-        <span class="font-bold text-[16px] md:text-lg text-gray-800">My Submissions</span>
-      </div>
-      <lucide-icon name="chevron-right" class="w-5 h-5 text-gray-400 group-hover:text-angeles-blue transition-colors group-hover:translate-x-1 transform"></lucide-icon>
-    </button>
-
-    <!-- Sign Out -->
-    <div class="pt-6 md:pt-10 flex justify-center pb-4">
-      <button class="flex items-center gap-2 text-gray-400 hover:text-angeles-red font-bold text-[15px] md:text-base transition-colors group">
-        <lucide-icon name="log-out" class="w-5 h-5 group-hover:-translate-x-1 transition-transform"></lucide-icon>
-        Sign Out
-      </button>
-    </div>
-
   </div>
 </div>
