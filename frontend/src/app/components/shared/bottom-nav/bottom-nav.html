@@ -1,1 +1,35 @@
-<p>bottom-nav works!</p>
+<nav class="fixed bottom-0 w-full bg-white border-t border-gray-100 px-6 pt-3 pb-safe-bottom min-h-[75px] rounded-t-3xl shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] md:max-w-md z-50">
+  <div class="flex justify-between items-center h-full max-w-sm mx-auto">
+    <!-- Home (Active) -->
+    <button class="flex flex-col items-center gap-1 text-angeles-blue min-w-[64px]">
+      <div class="bg-blue-50 p-2 rounded-2xl">
+        <lucide-icon name="home" [size]="24" class="text-angeles-blue fill-blue-50" [strokeWidth]="2"></lucide-icon>
+      </div>
+      <span class="text-[10px] font-semibold">Home</span>
+    </button>
+
+    <!-- Explore Map -->
+    <button class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 transition-colors min-w-[64px] pb-2 pt-2">
+      <div class="p-1">
+        <lucide-icon name="map" [size]="24" [strokeWidth]="2"></lucide-icon>
+      </div>
+      <span class="text-[10px] font-medium">Explore Map</span>
+    </button>
+
+    <!-- Submit -->
+    <button class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 transition-colors min-w-[64px] pb-2 pt-2">
+      <div class="p-1">
+        <lucide-icon name="plus-circle" [size]="24" [strokeWidth]="2"></lucide-icon>
+      </div>
+      <span class="text-[10px] font-medium">Submit</span>
+    </button>
+
+    <!-- Profile -->
+    <button class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 transition-colors min-w-[64px] pb-2 pt-2">
+      <div class="p-1">
+        <lucide-icon name="user" [size]="24" [strokeWidth]="2"></lucide-icon>
+      </div>
+      <span class="text-[10px] font-medium">Profile</span>
+    </button>
+  </div>
+</nav>
