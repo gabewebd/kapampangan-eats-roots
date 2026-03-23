@@ -43,11 +43,11 @@
           <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-angeles-blue focus:ring-angeles-blue" />
           <span class="text-gray-600 font-medium group-hover:text-gray-900 transition-colors">Remember me</span>
         </label>
-        <a href="#" class="text-angeles-blue font-bold hover:underline">Forgot password?</a>
+        <button type="button" class="text-angeles-blue font-bold hover:underline opacity-80" onclick="alert('Forgot password coming soon!')">Forgot password?</button>
       </div>
 
       <button type="submit" [disabled]="!loginForm.valid || isLoading"
-              class="w-full bg-angeles-blue text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-blue-900/20 hover:shadow-2xl hover:shadow-blue-900/40 hover:-translate-y-1 active:translate-y-0 transition-all duration-300 group disabled:opacity-50 disabled:scale-100">
+              class="w-full bg-angeles-blue text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-blue-900/20 hover:shadow-2xl hover:shadow-blue-900/40 hover:-translate-y-1 active:translate-y-0 transition-all duration-300 group disabled:opacity-50 disabled:scale-100 disabled:hover:translate-y-0 disabled:hover:shadow-xl">
         <lucide-icon *ngIf="isLoading" [name]="logIn" class="w-5 h-5 animate-spin"></lucide-icon>
         <span>{{ isLoading ? 'Authenticating...' : 'Sign In' }}</span>
         <lucide-icon *ngIf="!isLoading" [name]="arrowRight" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></lucide-icon>
@@ -55,7 +55,7 @@
 
       <div class="text-center pt-4">
         <p class="text-gray-500 text-sm font-medium">
-          Don't have an account? <a routerLink="/submit" class="text-angeles-red font-bold hover:underline">Join the Community</a>
+          Don't have an account? <button type="button" onclick="alert('User registration coming soon!')" class="text-angeles-red font-bold hover:underline">Join the Community</button>
         </p>
       </div>
     </form>

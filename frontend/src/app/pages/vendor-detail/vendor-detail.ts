@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { VendorService, Vendor } from '../../services/vendor';
-import { LucideAngularModule, Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader } from 'lucide-angular';
+import { LucideAngularModule, Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader, ArrowLeft, Share2, Heart, PenLine } from 'lucide-angular';
 import { timeout, catchError, of } from 'rxjs';
 
 @Component({
@@ -14,7 +14,7 @@ import { timeout, catchError, of } from 'rxjs';
     LucideAngularModule
   ],
   providers: [
-    LucideAngularModule.pick({ Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader }).providers!
+    LucideAngularModule.pick({ Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader, ArrowLeft, Share2, Heart, PenLine }).providers!
   ],
   templateUrl: './vendor-detail.html',
   styleUrl: './vendor-detail.css',
