@@ -1,13 +1,14 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { LucideAngularModule, Settings, Heart, Bookmark, MapPin, LogOut, ChevronRight, Star, Loader } from 'lucide-angular';
 import { AuthService } from '../../services/auth';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule, RouterModule],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
@@ -22,10 +23,18 @@ export class Profile implements OnInit {
   readonly loader = Loader;
 
   private authService = inject(AuthService);
+  private userService = inject(UserService);
   private router = inject(Router);
 
   loading = signal(true);
   isLoggedIn = signal(false);
+  activeTab = signal<'none' | 'favorites' | 'saved' | 'submissions' | 'visited'>('none');
+  
+  // Store full list data
+  favorites = signal<any[]>([]);
+  savedPlaces = signal<any[]>([]);
+  submissions = signal<any[]>([]);
+  visitedPlaces = signal<any[]>([]);
 
   // Profile data with fallback defaults
   profile = signal({
@@ -35,6 +44,7 @@ export class Profile implements OnInit {
     badge: 'Community Explorer',
     visited: 0,
     saved: 0,
+    favorites: 0,
     reviews: 0,
     pendingSubmissions: 0
   });
@@ -49,16 +59,33 @@ export class Profile implements OnInit {
           const userStr = localStorage.getItem('user_data');
           if (userStr) {
             const user = JSON.parse(userStr);
-            this.profile.set({
-              name: user.full_name || user.name || user.email || 'Explorer',
-              initials: this.getInitials(user.full_name || user.name || user.email || 'Explorer'),
-              memberSince: '2024',
-              badge: 'Local Explorer',
-              visited: 12,
-              saved: 5,
-              reviews: 3,
-              pendingSubmissions: 0
+            this.userService.getProfile(user.id || user._id).subscribe({
+              next: (fullUser: any) => {
+                if (fullUser) {
+                  this.profile.set({
+                    name: fullUser.name || fullUser.email || 'Explorer',
+                    initials: this.getInitials(fullUser.name || fullUser.email || 'Explorer'),
+                    memberSince: new Date(fullUser.memberSince).getFullYear().toString() || '2024',
+                    badge: 'Local Explorer',
+                    visited: fullUser.visited?.length || 0,
+                    saved: fullUser.savedPlaces?.length || 0,
+                    favorites: fullUser.favorites?.length || 0,
+                    reviews: 0,
+                    pendingSubmissions: fullUser.submissions?.filter((s: any) => !s.isVerified).length || 0
+                  });
+                  this.favorites.set(fullUser.favorites || []);
+                  this.savedPlaces.set(fullUser.savedPlaces || []);
+                  this.submissions.set(fullUser.submissions || []);
+                  this.visitedPlaces.set(fullUser.visited || []);
+                }
+                this.loading.set(false);
+              },
+              error: (err) => {
+                console.error('Audit [Profile]: Fetch failed', err);
+                this.loading.set(false);
+              }
             });
+            return; // Exit early as we are loading async
           }
         } catch (e) {
           console.error('Audit [Profile]: User decode failure', e);
@@ -73,10 +100,11 @@ export class Profile implements OnInit {
               initials: this.getInitials(admin.username || admin.name || 'Admin User'),
               memberSince: '2024',
               badge: 'Community Contributor',
-              visited: 23,
-              saved: 15,
-              reviews: 8,
-              pendingSubmissions: 2
+              visited: 0,
+              saved: 0,
+              favorites: 0,
+              reviews: 0,
+              pendingSubmissions: 0
             });
           }
         } catch (e) {
@@ -107,6 +135,14 @@ export class Profile implements OnInit {
       if (success) console.log('Audit: Logout redirect success');
       else console.error('Audit: Logout redirect failed');
     });
+  }
+
+  setActiveTab(tab: 'none' | 'favorites' | 'saved' | 'submissions' | 'visited') {
+    if (this.activeTab() === tab) {
+      this.activeTab.set('none'); // Toggle off
+    } else {
+      this.activeTab.set(tab);
+    }
   }
 
   goToLogin() {

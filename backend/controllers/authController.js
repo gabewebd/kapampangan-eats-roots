@@ -44,3 +44,47 @@ exports.userLogin = async (req, res) => {
         return res.status(500).json({ error: err.message });
     }
 };
+
+exports.userRegister = async (req, res) => {
+    const { name, email, password } = req.body;
+    try {
+        // Validation
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: "User already exists with this email" });
+        }
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Create user
+        const newUser = new User({
+            name,
+            email,
+            password: hashedPassword
+        });
+
+        await newUser.save();
+
+        // Generate token for immediate login
+        const token = jwt.sign({ id: newUser._id, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+        return res.status(201).json({
+            token,
+            user: {
+                id: newUser._id,
+                email: newUser.email,
+                full_name: newUser.name
+            }
+        });
+    } catch (err) {
+        console.error('Audit: userRegister failed:', err);
+        return res.status(500).json({ error: err.message });
+    }
+};

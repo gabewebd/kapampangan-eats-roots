@@ -24,7 +24,7 @@ function uploadToCloudinary(fileBuffer, folder = 'angeles-eats-roots/vendors') {
         const stream = cloudinary.uploader.upload_stream(
             {
                 folder,
-                allowed_formats: ['jpg', 'png', 'jpeg'],
+                allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
                 transformation: [{ width: 1000, height: 1000, crop: 'limit' }]
             },
             (error, result) => {

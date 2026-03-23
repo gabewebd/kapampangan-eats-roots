@@ -78,6 +78,7 @@ export class AdminDashboard implements OnInit {
   }
 
   onApprove(id: string) {
+    alert('Processing approval...');
     console.log(`Audit: Approving vendor ${id}`);
     this.adminService.approveVendor(id).subscribe({
       next: (res) => {
@@ -94,6 +95,7 @@ export class AdminDashboard implements OnInit {
 
   onReject(id: string) {
     if (confirm('Audit: Confirm rejection and permanent deletion?')) {
+      alert('Processing rejection...');
       console.log(`Audit: Rejecting vendor ${id}`);
       this.adminService.rejectVendor(id).subscribe({
         next: (res) => {
