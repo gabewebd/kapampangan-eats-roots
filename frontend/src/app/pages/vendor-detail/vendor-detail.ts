@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { VendorService, Vendor } from '../../services/vendor';
-import { LucideAngularModule, Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader } from 'lucide-angular';
+import { timeout, catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-vendor-detail',
@@ -12,6 +13,9 @@ import { LucideAngularModule, Calendar, MapPin, BadgeCheck, BookOpen, Quote, Lan
     RouterModule,
     LucideAngularModule
   ],
+  providers: [
+    LucideAngularModule.pick({ Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader }).providers!
+  ],
   templateUrl: './vendor-detail.html',
   styleUrl: './vendor-detail.css',
 })
@@ -20,38 +24,62 @@ export class VendorDetail implements OnInit {
   private vendorService = inject(VendorService);
 
   vendor: Vendor | null = null;
-  isLoading = true;
+  relatedVendors: Vendor[] = [];
+  isLoading = signal(true);
   error = '';
 
+  constructor() {
+    console.log('Audit [VendorDetail]: Constructor executed');
+  }
+
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      if (id) {
-        this.loadVendor(id);
-      } else {
-        this.error = 'No Vendor ID provided.';
-        this.isLoading = false;
+    this.route.paramMap.subscribe({
+      next: (params) => {
+        const id = params.get('id');
+        if (id) {
+          this.loadVendor(id);
+        } else {
+          this.error = 'No Vendor ID provided.';
+          this.isLoading.set(false);
+        }
+      },
+      error: (err) => {
+        console.error('VendorDetail paramMap error', err);
+        this.isLoading.set(false);
       }
     });
   }
 
   loadVendor(id: string) {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.error = '';
     
-    this.vendorService.getVendorById(id).subscribe({
+    this.vendorService.getVendorById(id).pipe(
+      timeout(5000),
+      catchError(err => {
+        console.error('VendorDetail fetch failed', err);
+        this.error = 'Failed to load vendor details. Please try again later.';
+        this.isLoading.set(false);
+        return of(null);
+      })
+    ).subscribe({
       next: (data) => {
+        if (!data) return;
         this.vendor = data;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Vendor Detail Component Error:', err);
-        if (err.status === 404 || err.status === 400) {
-          this.error = 'Vendor not found.';
-        } else {
-          this.error = 'Failed to load vendor details. Please try again later.';
-        }
-        this.isLoading = false;
+        this.isLoading.set(false);
+        
+        // Fetch related contextual spots
+        this.vendorService.getRelatedVendors(id).pipe(
+            timeout(5000),
+            catchError(err => {
+                console.error('Related spots failed', err);
+                return of([]);
+            })
+        ).subscribe({
+            next: (relatedData: Vendor[]) => {
+                this.relatedVendors = relatedData;
+            }
+        });
       }
     });
   }

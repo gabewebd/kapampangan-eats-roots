@@ -1,4 +1,4 @@
-<div *ngIf="isLoading" class="min-h-screen flex items-center justify-center bg-[#FDF9F0]">
+<div *ngIf="isLoading()" class="min-h-screen flex items-center justify-center bg-[#FDF9F0]">
   <lucide-icon name="loader" class="w-12 h-12 text-angeles-blue animate-spin"></lucide-icon>
 </div>
 
@@ -148,6 +148,58 @@
           </div>
         </section>
 
+        <!-- ASF Score Breakdown -->
+        <section *ngIf="vendor.isAuthentic && vendor.asfScores" class="bg-gradient-to-br from-yellow-50 to-white rounded-3xl p-8 border border-yellow-100 shadow-lg mt-8">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2.5 bg-angeles-yellow rounded-xl text-yellow-900">
+                    <lucide-icon name="badge-check" class="w-5 h-5"></lucide-icon>
+                </div>
+                <h3 class="font-serif text-2xl font-bold text-gray-900">Authenticity Score</h3>
+                <span class="ml-auto text-2xl font-black text-angeles-yellow">{{ vendor.asfScores.totalScore }}/50</span>
+            </div>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between text-sm font-bold text-gray-700">
+                    <span>Historical Continuity</span>
+                    <span class="text-angeles-blue">{{ vendor.asfScores.historicalContinuity }}/10</span>
+                </div>
+                <div class="w-full bg-yellow-100 rounded-full h-2">
+                    <div class="bg-angeles-yellow h-2 rounded-full" [style.width]="(vendor.asfScores.historicalContinuity * 10) + '%'"></div>
+                </div>
+
+                <div class="flex items-center justify-between text-sm font-bold text-gray-700 pt-2">
+                    <span>Cultural Authenticity</span>
+                    <span class="text-angeles-blue">{{ vendor.asfScores.culturalAuthenticity }}/10</span>
+                </div>
+                <div class="w-full bg-yellow-100 rounded-full h-2">
+                    <div class="bg-angeles-yellow h-2 rounded-full" [style.width]="(vendor.asfScores.culturalAuthenticity * 10) + '%'"></div>
+                </div>
+
+                <div class="flex items-center justify-between text-sm font-bold text-gray-700 pt-2">
+                    <span>Community Relevance</span>
+                    <span class="text-angeles-blue">{{ vendor.asfScores.communityRelevance }}/10</span>
+                </div>
+                <div class="w-full bg-yellow-100 rounded-full h-2">
+                    <div class="bg-angeles-yellow h-2 rounded-full" [style.width]="(vendor.asfScores.communityRelevance * 10) + '%'"></div>
+                </div>
+
+                <div class="flex items-center justify-between text-sm font-bold text-gray-700 pt-2">
+                    <span>Heritage Documentation</span>
+                    <span class="text-angeles-blue">{{ vendor.asfScores.heritageDocumentation }}/10</span>
+                </div>
+                <div class="w-full bg-yellow-100 rounded-full h-2">
+                    <div class="bg-angeles-yellow h-2 rounded-full" [style.width]="(vendor.asfScores.heritageDocumentation * 10) + '%'"></div>
+                </div>
+
+                <div class="flex items-center justify-between text-sm font-bold text-gray-700 pt-2">
+                    <span>Digital Narrative Quality</span>
+                    <span class="text-angeles-blue">{{ vendor.asfScores.digitalNarrativeQuality }}/10</span>
+                </div>
+                <div class="w-full bg-yellow-100 rounded-full h-2">
+                    <div class="bg-angeles-yellow h-2 rounded-full" [style.width]="(vendor.asfScores.digitalNarrativeQuality * 10) + '%'"></div>
+                </div>
+            </div>
+        </section>
+
         <!-- Location View (Previously LocationView) -->
         <section class="bg-white rounded-[40px] p-8 border border-gray-100 shadow-xl overflow-hidden relative">
           <div class="flex items-center gap-3 mb-6">
@@ -178,6 +230,34 @@
           </button>
         </section>
       </div>
+
     </div>
+
+    <!-- Related / Nearby Contextual Spots -->
+    <section *ngIf="relatedVendors && relatedVendors.length > 0" class="mt-16 border-t border-gray-200 pt-16">
+      <h3 class="font-serif text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+        <div class="p-3 bg-angeles-blue/10 rounded-2xl text-angeles-blue shadow-sm">
+          <lucide-icon name="map" class="w-6 h-6"></lucide-icon>
+        </div>
+        {{ vendor.category === 'Heritage Site' ? 'Nearby Authentic Eateries' : 'Nearby Heritage Sites' }}
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a *ngFor="let spot of relatedVendors" [routerLink]="['/vendor-detail', spot._id]" class="group block bg-white rounded-[32px] p-4 border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 shadow-inner relative">
+            <img [src]="spot.images[0] || 'assets/placeholder-food.jpg'" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" [alt]="spot.name">
+            <div *ngIf="spot.isAuthentic" class="absolute top-3 right-3 bg-angeles-yellow text-gray-900 px-3 py-1.5 rounded-full text-[10px] md:text-xs font-bold shadow-md flex items-center gap-1.5 uppercase tracking-wider">
+              <lucide-icon name="badge-check" class="w-3.5 h-3.5"></lucide-icon> Verified
+            </div>
+          </div>
+          <div class="px-2">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-angeles-blue">{{ spot.category }}</span>
+            </div>
+            <h4 class="font-bold text-gray-900 text-xl group-hover:text-angeles-blue transition-colors line-clamp-1 mb-2">{{ spot.name }}</h4>
+            <p class="text-sm text-gray-500 line-clamp-2 leading-relaxed italic pr-2">"{{ spot.culturalStory }}"</p>
+          </div>
+        </a>
+      </div>
+    </section>
   </main>
 </div>

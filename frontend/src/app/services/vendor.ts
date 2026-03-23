@@ -25,6 +25,14 @@ export interface Vendor {
   reviewCount: number;
   isVerified: boolean;
   isAuthentic: boolean;
+  asfScores?: {
+    historicalContinuity: number;
+    culturalAuthenticity: number;
+    communityRelevance: number;
+    heritageDocumentation: number;
+    digitalNarrativeQuality: number;
+    totalScore: number;
+  };
   historicalSignificance?: string;
   yearEstablished?: string;
   createdAt: string;
@@ -79,6 +87,12 @@ export class VendorService {
   getAllForMap(): Observable<Partial<Vendor>[]> {
     return this.http.get<Partial<Vendor>[]>(`${this.apiUrl}/explore/map`).pipe(
       catchError(handleHttpError('Map Data'))
+    );
+  }
+
+  getRelatedVendors(id: string): Observable<Vendor[]> {
+    return this.http.get<Vendor[]>(`${this.apiUrl}/${id}/related`).pipe(
+      catchError(handleHttpError(`Related Vendors ${id}`))
     );
   }
 }

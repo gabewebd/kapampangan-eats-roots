@@ -26,8 +26,17 @@ const VendorSchema = new mongoose.Schema({
     yearEstablished: { type: String },
     rating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
+    views: { type: Number, default: 0 },
     isVerified: { type: Boolean, default: false }, // For Admin Approval
     isAuthentic: { type: Boolean, default: false }, // Special yellow badge
+    asfScores: {
+        historicalContinuity: { type: Number, default: 0, min: 0, max: 10 },
+        culturalAuthenticity: { type: Number, default: 0, min: 0, max: 10 },
+        communityRelevance: { type: Number, default: 0, min: 0, max: 10 },
+        heritageDocumentation: { type: Number, default: 0, min: 0, max: 10 },
+        digitalNarrativeQuality: { type: Number, default: 0, min: 0, max: 10 },
+        totalScore: { type: Number, default: 0 }
+    },
     submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     createdAt: { type: Date, default: Date.now }
 });

@@ -25,6 +25,7 @@ export class Profile implements OnInit {
   private router = inject(Router);
 
   loading = signal(true);
+  isLoggedIn = signal(false);
 
   // Profile data with fallback defaults
   profile = signal({
@@ -37,26 +38,54 @@ export class Profile implements OnInit {
     reviews: 0,
     pendingSubmissions: 0
   });
-
   ngOnInit() {
-    // Attempt to load profile from localStorage admin token if available
-    const token = localStorage.getItem('adminToken');
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        this.profile.set({
-          name: payload.username || payload.name || 'Admin User',
-          initials: this.getInitials(payload.username || payload.name || 'Admin User'),
-          memberSince: '2024',
-          badge: 'Community Contributor',
-          visited: 23,
-          saved: 15,
-          reviews: 8,
-          pendingSubmissions: 2
-        });
-      } catch (e) {
-        console.error('Audit [Profile]: Token decode failure', e);
+    const adminToken = this.authService.getToken();
+    const userToken = this.authService.getUserToken();
+
+    if (userToken || adminToken) {
+      this.isLoggedIn.set(true);
+      if (userToken) {
+        try {
+          const userStr = localStorage.getItem('user_data');
+          if (userStr) {
+            const user = JSON.parse(userStr);
+            this.profile.set({
+              name: user.full_name || user.name || user.email || 'Explorer',
+              initials: this.getInitials(user.full_name || user.name || user.email || 'Explorer'),
+              memberSince: '2024',
+              badge: 'Local Explorer',
+              visited: 12,
+              saved: 5,
+              reviews: 3,
+              pendingSubmissions: 0
+            });
+          }
+        } catch (e) {
+          console.error('Audit [Profile]: User decode failure', e);
+        }
+      } else if (adminToken) {
+        try {
+          const adminStr = localStorage.getItem('admin_user');
+          if (adminStr) {
+            const admin = JSON.parse(adminStr);
+            this.profile.set({
+              name: admin.username || admin.name || 'Admin User',
+              initials: this.getInitials(admin.username || admin.name || 'Admin User'),
+              memberSince: '2024',
+              badge: 'Community Contributor',
+              visited: 23,
+              saved: 15,
+              reviews: 8,
+              pendingSubmissions: 2
+            });
+          }
+        } catch (e) {
+          console.error('Audit [Profile]: Admin decode failure', e);
+        }
       }
+    } else {
+      // If no session found, redirect to login so we don't show a "Guest User" profile
+      this.router.navigate(['/login']);
     }
     this.loading.set(false);
   }
@@ -66,7 +95,21 @@ export class Profile implements OnInit {
   }
 
   signOut() {
+    console.log('Audit: Signing out from Profile...');
     this.authService.logout();
-    this.router.navigate(['/']);
+    this.authService.userLogout();
+    
+    // Explicit clearance as safety net
+    localStorage.clear(); 
+    
+    this.isLoggedIn.set(false);
+    this.router.navigate(['/login']).then(success => {
+      if (success) console.log('Audit: Logout redirect success');
+      else console.error('Audit: Logout redirect failed');
+    });
+  }
+
+  goToLogin() {
+    this.router.navigate(['/login']);
   }
 }
