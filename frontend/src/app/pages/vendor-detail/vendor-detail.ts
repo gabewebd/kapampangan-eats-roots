@@ -43,12 +43,14 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   isVisited = signal(false);
   showReviewModal = signal(false);
   isSubmittingReview = signal(false);
-  
+
   newReview = {
     rating: 5,
     comment: ''
   };
-  
+
+  selectedMenuItem = signal<any>(null);
+  showMenuPopup = signal(false);
   private map?: L.Map;
   private marker?: L.Marker;
 
@@ -411,5 +413,15 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.voiceService.speak(text);
     }
+  }
+
+  openMenuPopup(item: any) {
+    this.selectedMenuItem.set(item);
+    this.showMenuPopup.set(true);
+  }
+
+  closeMenuPopup() {
+    this.showMenuPopup.set(false);
+    setTimeout(() => this.selectedMenuItem.set(null), 300);
   }
 }
