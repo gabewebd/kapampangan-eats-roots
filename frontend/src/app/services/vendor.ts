@@ -12,7 +12,7 @@ export interface Vendor {
   location: {
     address: string;
     type?: string;
-    coordinates: [number, number] | { lat: number, lng: number }; // lng, lat or lat, lng
+    coordinates: [number, number] | { lat: number, lng: number }; // [lng, lat] or {lat, lng}
   };
   images: string[];
   authenticityTraits: string[];
@@ -96,11 +96,7 @@ export class VendorService {
       catchError(handleHttpError(`Related Vendors ${id}`))
     );
   }
-<<<<<<< HEAD
-  
-=======
 
->>>>>>> 3411dac (Feat: Implement Leaflet interactive maps, GeoJSON migration, and TypeScript fixes for submission form and explore map)
   search(query: string): Observable<Vendor[]> {
     return this.http.get<Vendor[]>(`${this.apiUrl}/search?q=${query}`).pipe(
       catchError(handleHttpError('Search'))

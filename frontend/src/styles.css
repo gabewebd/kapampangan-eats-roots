@@ -14,3 +14,11 @@
     display: none; /* Chrome, Safari and Opera */
   }
 }
+
+/* Global height reset for map pages */
+router-outlet + app-explore-map {
+  flex: 1;
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+}
