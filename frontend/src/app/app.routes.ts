@@ -20,6 +20,7 @@ export const routes: Routes = [
   { path: 'profile', component: Profile },
   { path: 'login', component: UserLogin },
   { path: 'admin-login', component: AdminLogin },
+  { path: 'admin-dashboard', component: AdminDashboard, canActivate: [authGuard] },
   { path: 'vendor-detail/:id', component: VendorDetail },
   { path: 'privacy-policy', component: PrivacyPolicy },
   { path: 'terms-of-service', component: TermsOfService },
