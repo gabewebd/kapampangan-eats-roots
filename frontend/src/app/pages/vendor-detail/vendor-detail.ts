@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { VendorService, Vendor } from '../../services/vendor';
-import { LucideAngularModule, Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader, ArrowLeft, Share2, Heart, PenLine, Bookmark, Check } from 'lucide-angular';
+import { LucideAngularModule, Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader, ArrowLeft, Share2, Heart, PenLine, Bookmark, Check, Volume2, VolumeX } from 'lucide-angular';
 import * as L from 'leaflet';
 import { AuthService } from '../../services/auth';
 import { UserService } from '../../services/user.service';
 import { ReviewService, Review } from '../../services/review.service';
 import { timeout, catchError, of } from 'rxjs';
+import { VoiceStoryService } from '../../services/voice-story.service';
 
 @Component({
   selector: 'app-vendor-detail',
@@ -20,7 +21,7 @@ import { timeout, catchError, of } from 'rxjs';
     FormsModule
   ],
   providers: [
-    LucideAngularModule.pick({ Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader, ArrowLeft, Share2, Heart, PenLine, Bookmark, Check, X: 'x' as any }).providers!
+    LucideAngularModule.pick({ Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader, ArrowLeft, Share2, Heart, PenLine, Bookmark, Check, Volume2, VolumeX, X: 'x' as any }).providers!
   ],
   templateUrl: './vendor-detail.html',
   styleUrl: './vendor-detail.css',
@@ -32,6 +33,7 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   private userService = inject(UserService);
   private reviewService = inject(ReviewService);
   private router = inject(Router);
+  private voiceService = inject(VoiceStoryService);
 
   vendor: Vendor | null = null;
   relatedVendors: Vendor[] = [];
@@ -52,6 +54,7 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
 
   isLoading = signal(true);
   isReviewsLoading = signal(true);
+  isSpeaking = this.voiceService.isSpeaking;
   error = '';
 
   constructor() {
@@ -84,6 +87,7 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.voiceService.stop();
     if (this.map) {
       this.map.remove();
     }
@@ -399,5 +403,13 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
         this.isSubmittingReview.set(false);
       }
     });
+  }
+
+  toggleStory(text: string) {
+    if (this.isSpeaking()) {
+      this.voiceService.stop();
+    } else {
+      this.voiceService.speak(text);
+    }
   }
 }

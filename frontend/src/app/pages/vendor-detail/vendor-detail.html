@@ -102,6 +102,18 @@
               <lucide-icon name="book-open" class="w-6 h-6"></lucide-icon>
             </div>
             <h3 class="font-serif text-3xl font-bold text-gray-900">The Cultural Story</h3>
+            <button *ngIf="vendor.culturalStory" 
+                    (click)="toggleStory(vendor.culturalStory)" 
+                    class="ml-auto p-3 rounded-2xl transition-all duration-300 flex items-center gap-2 group"
+                    [class.bg-angeles-blue]="isSpeaking()"
+                    [class.text-white]="isSpeaking()"
+                    [class.bg-angeles-blue/5]="!isSpeaking()"
+                    [class.text-angeles-blue]="!isSpeaking()">
+              <lucide-icon [name]="isSpeaking() ? 'volume-x' : 'volume-2'" 
+                           [class.animate-pulse]="isSpeaking()"
+                           class="w-5 h-5"></lucide-icon>
+              <span class="font-bold text-sm hidden md:inline">{{ isSpeaking() ? 'Stop Narration' : 'Listen to Story' }}</span>
+            </button>
           </div>
           <div class="relative">
             <lucide-icon name="quote" class="absolute -top-4 -left-4 w-12 h-12 text-angeles-blue/5 -z-10"></lucide-icon>
@@ -219,6 +231,18 @@
                 <lucide-icon name="landmark" class="w-6 h-6"></lucide-icon>
               </div>
               <h3 class="font-serif text-3xl font-bold text-gray-900">Historical Significance</h3>
+              <button *ngIf="vendor.historicalSignificance" 
+                      (click)="toggleStory(vendor.historicalSignificance)" 
+                      class="ml-auto p-3 rounded-2xl transition-all duration-300 flex items-center gap-2 group"
+                      [class.bg-angeles-red]="isSpeaking()"
+                      [class.text-white]="isSpeaking()"
+                      [class.bg-angeles-red/5]="!isSpeaking()"
+                      [class.text-angeles-red]="!isSpeaking()">
+                <lucide-icon [name]="isSpeaking() ? 'volume-x' : 'volume-2'" 
+                             [class.animate-pulse]="isSpeaking()"
+                             class="w-5 h-5"></lucide-icon>
+                <span class="font-bold text-sm hidden md:inline">{{ isSpeaking() ? 'Stop Narration' : 'Listen' }}</span>
+              </button>
             </div>
             <div class="prose prose-lg max-w-none text-gray-600 leading-relaxed bg-white/50 p-8 rounded-[32px] border border-gray-100">
               <p>{{ vendor.historicalSignificance }}</p>

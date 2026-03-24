@@ -1,1 +1,50 @@
+.animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
 
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: .8;
+        transform: scale(1.05);
+    }
+}
+
+.listen-btn-pulse {
+    position: relative;
+}
+
+.listen-btn-pulse::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 2px solid currentColor;
+    border-radius: inherit;
+    animation: ripple 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+    opacity: 0;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(1.3);
+        opacity: 0;
+    }
+}
+
+/* Ensure the detail map doesn't overflow */
+#detail-map {
+    z-index: 1;
+    background: #f8fafc;
+}
+
+/* Smooth transitions for sections */
+section {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
