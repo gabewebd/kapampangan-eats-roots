@@ -2,16 +2,21 @@ const mongoose = require('mongoose');
 
 const VendorSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    yearsInOperation: { type: String, required: true }, // e.g., "Since 1974"
+    yearsInOperation: { type: String }, // Optional for Heritage Sites
     category: { 
         type: String, 
         enum: ['Local Eatery', 'Heritage Site'], 
         required: true 
     },
-    culturalStory: { type: String, required: true }, // Max 500 chars per your UI
+    culturalStory: { type: String }, // Optional for Heritage Sites
     location: {
-        address: { type: String, required: true }, // e.g., "Valdez Street, Angeles City"
-        coordinates: { lat: Number, lng: Number }
+        address: { type: String, required: true },
+        type: { type: String, enum: ['Point'], default: 'Point' },
+        coordinates: { 
+            type: [Number], 
+            default: [120.5887, 15.1449], // Angeles City [lng, lat]
+            index: '2dsphere' 
+        }
     },
     images: [String], // Array of Cloudinary URLs
     authenticityTraits: [String], // e.g., "Original family recipe"

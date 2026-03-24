@@ -1,9 +1,10 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { VendorService, Vendor } from '../../services/vendor';
 import { LucideAngularModule, Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader, ArrowLeft, Share2, Heart, PenLine, Bookmark, Check } from 'lucide-angular';
+import * as L from 'leaflet';
 import { AuthService } from '../../services/auth';
 import { UserService } from '../../services/user.service';
 import { ReviewService, Review } from '../../services/review.service';
@@ -24,7 +25,7 @@ import { timeout, catchError, of } from 'rxjs';
   templateUrl: './vendor-detail.html',
   styleUrl: './vendor-detail.css',
 })
-export class VendorDetail implements OnInit {
+export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private vendorService = inject(VendorService);
   private authService = inject(AuthService);
@@ -45,6 +46,9 @@ export class VendorDetail implements OnInit {
     rating: 5,
     comment: ''
   };
+  
+  private map?: L.Map;
+  private marker?: L.Marker;
 
   isLoading = signal(true);
   isReviewsLoading = signal(true);
@@ -75,6 +79,126 @@ export class VendorDetail implements OnInit {
     });
   }
 
+  ngAfterViewInit() {
+    this.checkAndInitMap();
+  }
+
+  ngOnDestroy() {
+    if (this.map) {
+      this.map.remove();
+    }
+  }
+
+  private checkAndInitMap() {
+    if (this.vendor && this.vendor.location?.coordinates) {
+        setTimeout(() => this.initMap(), 100);
+    }
+  }
+
+  private initMap() {
+    const coords = this.vendor?.location?.coordinates;
+    if (!coords) return;
+
+    let lat: number | undefined;
+    let lng: number | undefined;
+    // Handle both old {lat, lng} and new GeoJSON [lng, lat] formats
+    if (Array.isArray(coords)) {
+        lng = coords[0];
+        lat = coords[1];
+    } else if (coords && typeof coords === 'object' && 'lat' in coords && 'lng' in coords) {
+        lat = (coords as any).lat;
+        lng = (coords as any).lng;
+    }
+
+    if (lat === undefined || lng === undefined) {
+        console.warn('Audit: Invalid coordinates', coords);
+        return;
+    }
+
+    // If map already exists, just update it
+    if (this.map) {
+        this.updateMap(lat, lng);
+        return;
+    }
+
+    const mapElement = document.getElementById('detail-map');
+    if (!mapElement) {
+        console.warn('Audit: detail-map element not found yet');
+        return;
+    }
+
+    console.log(`Audit: Initializing detail map at [${lat}, ${lng}]`);
+    this.map = L.map('detail-map', {
+      center: [lat, lng],
+      zoom: 15,
+      zoomControl: false,
+      scrollWheelZoom: true
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(this.map);
+
+    // Fix default marker icon issue
+    const DefaultIcon = L.icon({
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
+    L.Marker.prototype.options.icon = DefaultIcon;
+
+    this.marker = L.marker([lat, lng]).addTo(this.map);
+
+    // Persistent invalidation loop to fix "gray box" which happens when 
+    // container is initialy zero-height (common in Angular tab/flex layouts)
+    let attempts = 0;
+    const invalidateInterval = setInterval(() => {
+        if (this.map) {
+            this.map.invalidateSize();
+            const size = this.map.getSize();
+            if (size.x > 0 && size.y > 0) {
+                console.log('Audit: Map rendered successfully after', attempts, 'attempts');
+                clearInterval(invalidateInterval);
+            }
+        }
+        attempts++;
+        if (attempts > 20) clearInterval(invalidateInterval); // Safety break
+    }, 200);
+  }
+
+  private updateMap(lat: number, lng: number) {
+    if (this.map && this.marker) {
+        this.map.setView([lat, lng], 15);
+        this.marker.setLatLng([lat, lng]);
+        this.map.invalidateSize();
+    }
+  }
+
+  openDirections() {
+    const coords = this.vendor?.location?.coordinates;
+    if (!coords) return;
+
+    let lat: number | undefined;
+    let lng: number | undefined;
+    if (Array.isArray(coords)) {
+        lng = coords[0];
+        lat = coords[1];
+    } else if (coords && typeof coords === 'object' && 'lat' in coords && 'lng' in coords) {
+        lat = (coords as any).lat;
+        lng = (coords as any).lng;
+    }
+
+    if (lat === undefined || lng === undefined) return;
+
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    window.open(url, '_blank');
+  }
+
   loadVendor(id: string) {
     this.isLoading.set(true);
     this.error = '';
@@ -93,6 +217,7 @@ export class VendorDetail implements OnInit {
         this.vendor = data;
         this.isLoading.set(false);
         this.checkIfFavorite();
+        this.checkAndInitMap();
         
         // Fetch related contextual spots
         this.vendorService.getRelatedVendors(id).pipe(

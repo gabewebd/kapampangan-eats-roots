@@ -78,17 +78,54 @@
                    class="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-angeles-blue/10 focus:border-angeles-blue transition-all" />
           </div>
 
-          <!-- Address -->
-          <div>
+          <!-- Address & Search -->
+          <div class="relative">
             <label class="flex items-center gap-2 text-angeles-blue font-bold text-[15px] md:text-[17px] mb-2">
               <lucide-icon name="map-pin" class="w-5 h-5 stroke-[2.5px]"></lucide-icon> Address
             </label>
-            <input type="text" formControlName="address" placeholder="e.g., Valdez Street, Angeles City" 
-                   class="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-angeles-blue/10 focus:border-angeles-blue transition-all" />
+            <div class="relative">
+                <input type="text" formControlName="address" 
+                       (input)="onAddressInput($event)"
+                       (focus)="showSuggestions.set(suggestions().length > 0)"
+                       placeholder="Search for an address..." 
+                       class="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-angeles-blue/10 focus:border-angeles-blue transition-all" />
+                
+                <!-- Suggestions Dropdown -->
+                <div *ngIf="showSuggestions() && suggestions().length > 0" 
+                     class="absolute z-[60] w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                    <button type="button" *ngFor="let suggestion of suggestions()" 
+                            (click)="selectSuggestion(suggestion)"
+                            class="w-full px-5 py-4 text-left hover:bg-gray-50 flex items-start gap-3 transition-colors border-b border-gray-50 last:border-0 group">
+                        <lucide-icon name="map-pin" class="w-5 h-5 text-gray-300 group-hover:text-angeles-blue shrink-0 mt-0.5"></lucide-icon>
+                        <div>
+                            <p class="text-[14px] font-bold text-gray-800">{{ suggestion.display_name }}</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Map Container -->
+            <div class="mt-4 relative group">
+                <div id="map" class="w-full h-[300px] md:h-[400px] rounded-3xl border border-gray-100 shadow-inner overflow-hidden z-0"></div>
+                
+                <!-- Locate Me Button -->
+                <button type="button" (click)="locateMe()" 
+                        class="absolute bottom-6 right-6 z-10 bg-white p-3.5 rounded-2xl shadow-xl border border-gray-100 text-angeles-blue hover:scale-105 active:scale-95 transition-all flex items-center gap-2 font-bold text-sm">
+                    <lucide-icon name="navigation" class="w-5 h-5"></lucide-icon>
+                    Locate Me
+                </button>
+                
+                <div class="absolute top-4 left-4 z-10 bg-white/80 backdrop-blur-md px-4 py-2 rounded-xl border border-white/50 shadow-sm pointer-events-none">
+                    <p class="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                        <lucide-icon name="info" class="w-3.5 h-3.5"></lucide-icon>
+                        Drag marker or click map to refine
+                    </p>
+                </div>
+            </div>
           </div>
 
           <!-- Years in Operation -->
-          <div>
+          <div *ngIf="!isHeritageSite()">
             <label class="flex items-center gap-2 text-angeles-blue font-bold text-[15px] md:text-[17px] mb-2">
               <lucide-icon name="clock" class="w-5 h-5 stroke-[2.5px]"></lucide-icon> Years in Operation
             </label>
@@ -97,7 +134,7 @@
           </div>
 
           <!-- Cultural Story -->
-          <div>
+          <div *ngIf="!isHeritageSite()">
             <label class="flex items-center gap-2 text-angeles-blue font-bold text-[15px] md:text-[17px] mb-1.5">
               <lucide-icon name="book-open" class="w-5 h-5 stroke-[2.5px]"></lucide-icon> Your Cultural Story
             </label>

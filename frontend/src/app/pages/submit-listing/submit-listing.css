@@ -1,0 +1,37 @@
+/* Map & Suggestions Styling */
+#map {
+    z-index: 0;
+}
+
+.animate-in {
+    animation-duration: 0.2s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    animation-fill-mode: forwards;
+}
+
+.fade-in {
+    animation-name: fadeIn;
+}
+
+.slide-in-from-top-2 {
+    animation-name: slideInFromTop2;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInFromTop2 {
+    from { transform: translateY(-0.5rem); }
+    to { transform: translateY(0); }
+}
+
+/* Ensure Leaflet controls don't overlap our floating elements */
+.leaflet-control-container {
+    z-index: 10;
+}
+
+.leaflet-bottom.leaflet-right {
+    bottom: 80px; /* Shift up to avoid Locate Me button */
+}

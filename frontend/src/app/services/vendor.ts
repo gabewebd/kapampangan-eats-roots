@@ -11,7 +11,8 @@ export interface Vendor {
   culturalStory: string;
   location: {
     address: string;
-    coordinates?: { lat: number; lng: number };
+    type?: string;
+    coordinates: [number, number] | { lat: number, lng: number }; // lng, lat or lat, lng
   };
   images: string[];
   authenticityTraits: string[];
@@ -93,6 +94,12 @@ export class VendorService {
   getRelatedVendors(id: string): Observable<Vendor[]> {
     return this.http.get<Vendor[]>(`${this.apiUrl}/${id}/related`).pipe(
       catchError(handleHttpError(`Related Vendors ${id}`))
+    );
+  }
+
+  search(query: string): Observable<Vendor[]> {
+    return this.http.get<Vendor[]>(`${this.apiUrl}/search?q=${query}`).pipe(
+      catchError(handleHttpError('Search'))
     );
   }
 }

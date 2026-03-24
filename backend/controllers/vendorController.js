@@ -6,7 +6,7 @@ const { uploadToCloudinary } = require('../config/cloudinary');
 // POST: Join Angeles Eats & Roots
 exports.createVendor = async (req, res) => {
     try {
-        const { name, yearsInOperation, category, culturalStory, address, historicalSignificance, yearEstablished } = req.body;
+        const { name, yearsInOperation, category, culturalStory, address, latitude, longitude, historicalSignificance, yearEstablished } = req.body;
 
         // Backend Validation Audit
         if (!name || !category || !address) {
@@ -38,10 +38,10 @@ exports.createVendor = async (req, res) => {
         let menuHighlights = [];
         if (req.body.menuHighlights) {
             try {
-                menuHighlights = typeof req.body.menuHighlights === 'string' 
-                    ? JSON.parse(req.body.menuHighlights) 
+                menuHighlights = typeof req.body.menuHighlights === 'string'
+                    ? JSON.parse(req.body.menuHighlights)
                     : req.body.menuHighlights;
-                
+
                 // Map uploaded menu images to items
                 let menuImageIndex = 0;
                 menuHighlights = menuHighlights.map((item) => {
@@ -59,8 +59,8 @@ exports.createVendor = async (req, res) => {
         let authenticityTraits = [];
         if (req.body.authenticityTraits) {
             try {
-                authenticityTraits = typeof req.body.authenticityTraits === 'string' 
-                    ? JSON.parse(req.body.authenticityTraits) 
+                authenticityTraits = typeof req.body.authenticityTraits === 'string'
+                    ? JSON.parse(req.body.authenticityTraits)
                     : req.body.authenticityTraits;
             } catch (e) {
                 console.error("Traits Parse Error:", e);
@@ -72,7 +72,14 @@ exports.createVendor = async (req, res) => {
             yearsInOperation,
             category,
             culturalStory,
-            location: { address },
+            location: {
+                address,
+                type: 'Point',
+                coordinates: [
+                    !isNaN(parseFloat(longitude)) ? parseFloat(longitude) : 120.5887,
+                    !isNaN(parseFloat(latitude)) ? parseFloat(latitude) : 15.1449
+                ]
+            },
             images: vendorImages,
             menuHighlights,
             authenticityTraits,
@@ -91,20 +98,20 @@ exports.createVendor = async (req, res) => {
                 $push: { submissions: newVendor._id }
             });
         }
-        
+
         // Immediate 201 Created Response — only after Cloudinary + MongoDB persistence
-        return res.status(201).json({ 
-            success: true, 
+        return res.status(201).json({
+            success: true,
             message: 'Vendor submission received and pending verification.',
-            vendorId: newVendor._id 
+            vendorId: newVendor._id
         });
 
     } catch (err) {
         console.error('Submission Audit Failure:', err);
-        return res.status(500).json({ 
-            success: false, 
-            error: 'Server failed to process submission.', 
-            details: err.message 
+        return res.status(500).json({
+            success: false,
+            error: 'Server failed to process submission.',
+            details: err.message
         });
     }
 };
@@ -130,10 +137,10 @@ exports.getVendorById = async (req, res) => {
 
         const vendor = await Vendor.findById(id);
         if (!vendor) return res.status(404).json({ success: false, message: 'Vendor not found' });
-        
+
         // Non-blocking view increment
-        Vendor.findByIdAndUpdate(id, { $inc: { views: 1 } }, { returnDocument: 'after' }).exec().catch(() => {});
-        
+        Vendor.findByIdAndUpdate(id, { $inc: { views: 1 } }, { returnDocument: 'after' }).exec().catch(() => { });
+
         return res.status(200).json(vendor);
     } catch (err) {
         console.error('Audit: getVendorById failed:', err);
@@ -189,11 +196,37 @@ exports.getEateries = async (req, res) => {
     }
 };
 
+// GET: Search Vendors
+exports.searchVendors = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q) {
+            return res.status(400).json({ success: false, error: 'Search query is required' });
+        }
+
+        const searchRegex = new RegExp(q, 'i');
+        const results = await Vendor.find({
+            isVerified: true,
+            $or: [
+                { name: searchRegex },
+                { category: searchRegex },
+                { culturalStory: searchRegex },
+                { 'location.address': searchRegex }
+            ]
+        }).limit(20);
+
+        return res.status(200).json(results);
+    } catch (err) {
+        console.error('Audit: searchVendors failed:', err);
+        return res.status(500).json({ success: false, error: 'Search failed' });
+    }
+};
+
 // GET: All Vendors (for Explore Map)
 exports.getAllVendors = async (req, res) => {
     try {
         const vendors = await Vendor.find({ isVerified: true })
-            .select('name category location images rating');
+            .select('name category location images rating isAuthentic');
         return res.status(200).json(vendors);
     } catch (err) {
         console.error('Audit: getAllVendors failed:', err);
@@ -249,21 +282,21 @@ exports.authenticateVendor = async (req, res) => {
     try {
         const { id } = req.params;
         const { asfScores } = req.body;
-        
+
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ success: false, message: 'Invalid Vendor ID format' });
         }
 
         let updateData = { isAuthentic: true };
-        
+
         if (asfScores) {
-            const totalScore = 
+            const totalScore =
                 (Number(asfScores.historicalContinuity) || 0) +
                 (Number(asfScores.culturalAuthenticity) || 0) +
                 (Number(asfScores.communityRelevance) || 0) +
                 (Number(asfScores.heritageDocumentation) || 0) +
                 (Number(asfScores.digitalNarrativeQuality) || 0);
-                
+
             updateData.asfScores = {
                 ...asfScores,
                 totalScore

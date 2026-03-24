@@ -322,18 +322,13 @@
             {{ vendor.location.address }}
           </p>
 
-          <!-- Mock Map UI -->
-          <div class="relative h-48 w-full rounded-3xl overflow-hidden group">
-            <div class="absolute inset-0 bg-[#E5E7EB] flex items-center justify-center">
-              <lucide-icon name="activity" class="w-8 h-8 text-gray-300 animate-pulse"></lucide-icon>
-              <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                <lucide-icon name="map-pin" class="w-10 h-10 text-angeles-red drop-shadow-lg animate-bounce"></lucide-icon>
-              </div>
-            </div>
-            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
+          <!-- Real Map Container -->
+          <div class="relative h-48 w-full rounded-3xl overflow-hidden shadow-inner border border-gray-100 bg-gray-50 group">
+            <div id="detail-map" class="w-full h-full z-0"></div>
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors pointer-events-none z-10"></div>
           </div>
 
-          <button class="w-full mt-8 py-4 bg-gray-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-black active:scale-95 transition-all">
+          <button (click)="openDirections()" class="w-full mt-8 py-4 bg-gray-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-black active:scale-95 transition-all">
             Get Directions
             <lucide-icon name="chevron-right" class="w-4 h-4"></lucide-icon>
           </button>

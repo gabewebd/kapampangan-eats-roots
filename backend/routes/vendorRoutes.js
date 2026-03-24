@@ -6,6 +6,7 @@ const authMiddleware = require('../middleware/auth');
 
 // Public GET routes
 router.get('/trending', vendorController.getTrending);
+router.get('/search', vendorController.searchVendors);
 router.get('/filter/heritage', vendorController.getHeritageSites);
 router.get('/filter/eateries', vendorController.getEateries);
 router.get('/explore/map', vendorController.getAllVendors);
