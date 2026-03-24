@@ -43,8 +43,6 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   isVisited = signal(false);
   showReviewModal = signal(false);
   isSubmittingReview = signal(false);
-  isSpeaking = signal(false);
-  private speechUtterance: SpeechSynthesisUtterance | null = null;
   
   newReview = {
     rating: 5,
@@ -93,7 +91,6 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
     if (this.map) {
       this.map.remove();
     }
-    window.speechSynthesis.cancel();
   }
 
   private checkAndInitMap() {
@@ -373,23 +370,6 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
         this.isReviewsLoading.set(false);
       }
     });
-  }
-
-  toggleStory(text: string) {
-    if (this.isSpeaking()) {
-      window.speechSynthesis.cancel();
-      this.isSpeaking.set(false);
-      return;
-    }
-    
-    window.speechSynthesis.cancel();
-    
-    this.speechUtterance = new SpeechSynthesisUtterance(text);
-    this.speechUtterance.onend = () => this.isSpeaking.set(false);
-    this.speechUtterance.onerror = () => this.isSpeaking.set(false);
-    
-    window.speechSynthesis.speak(this.speechUtterance);
-    this.isSpeaking.set(true);
   }
 
   submitReview() {
