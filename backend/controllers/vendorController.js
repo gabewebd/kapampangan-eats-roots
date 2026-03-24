@@ -189,6 +189,32 @@ exports.getEateries = async (req, res) => {
     }
 };
 
+// GET: Search Vendors
+exports.searchVendors = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q) {
+            return res.status(400).json({ success: false, error: 'Search query is required' });
+        }
+
+        const searchRegex = new RegExp(q, 'i');
+        const results = await Vendor.find({
+            isVerified: true,
+            $or: [
+                { name: searchRegex },
+                { category: searchRegex },
+                { culturalStory: searchRegex },
+                { 'location.address': searchRegex }
+            ]
+        }).limit(20);
+
+        return res.status(200).json(results);
+    } catch (err) {
+        console.error('Audit: searchVendors failed:', err);
+        return res.status(500).json({ success: false, error: 'Search failed' });
+    }
+};
+
 // GET: All Vendors (for Explore Map)
 exports.getAllVendors = async (req, res) => {
     try {
