@@ -23,6 +23,7 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
 
   submitForm: FormGroup;
   selectedFiles: File[] = [];
+  readonly navigationIcon = Navigation;
   imagePreviews: string[] = [];
   menuItemImages: (File | null)[] = [];
   isLoading = signal(false);

@@ -17,6 +17,7 @@ export class ExploreMap implements AfterViewInit, OnDestroy {
   private router = inject(Router);
 
   readonly filter = Filter;
+  readonly navigationIcon = Navigation;
 
   private map?: L.Map;
   private markersLayer = L.layerGroup();

@@ -44,12 +44,12 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding-top: 48px;
+    padding-top: 96px;
 }
 
 @media (min-width: 768px) {
     .explore-map-header {
-        padding-top: 32px;
+        padding-top: 110px;
         padding-left: 48px;
         padding-right: 48px;
     }
@@ -57,7 +57,7 @@
 
 .explore-map-filter-dropdown {
     position: absolute;
-    top: 140px;
+    top: 170px;
     right: 24px;
     z-index: 1001;
     background: rgba(255, 255, 255, 0.95);
@@ -83,7 +83,7 @@
     }
 
     .explore-map-filter-dropdown {
-        top: 130px;
+        top: 200px;
         right: 48px;
     }
 }

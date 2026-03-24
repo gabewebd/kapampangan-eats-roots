@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { VendorService, Vendor } from '../../services/vendor';
-import { LucideAngularModule, Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader, ArrowLeft, Share2, Heart, PenLine, Bookmark, Check } from 'lucide-angular';
+import { LucideAngularModule, Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader, ArrowLeft, Share2, Heart, PenLine, Bookmark, Check, Volume2, VolumeX, X } from 'lucide-angular';
 import * as L from 'leaflet';
 import { AuthService } from '../../services/auth';
 import { UserService } from '../../services/user.service';
@@ -20,7 +20,7 @@ import { timeout, catchError, of } from 'rxjs';
     FormsModule
   ],
   providers: [
-    LucideAngularModule.pick({ Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader, ArrowLeft, Share2, Heart, PenLine, Bookmark, Check, X: 'x' as any }).providers!
+    LucideAngularModule.pick({ Calendar, MapPin, BadgeCheck, BookOpen, Quote, Landmark, Activity, ChevronRight, Clock, Star, Map, Loader, ArrowLeft, Share2, Heart, PenLine, Bookmark, Check, X, Volume2, VolumeX }).providers!
   ],
   templateUrl: './vendor-detail.html',
   styleUrl: './vendor-detail.css',
@@ -41,6 +41,8 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   isVisited = signal(false);
   showReviewModal = signal(false);
   isSubmittingReview = signal(false);
+  isSpeaking = signal(false);
+  private speechUtterance: SpeechSynthesisUtterance | null = null;
   
   newReview = {
     rating: 5,
@@ -87,6 +89,7 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
     if (this.map) {
       this.map.remove();
     }
+    window.speechSynthesis.cancel();
   }
 
   private checkAndInitMap() {
@@ -366,6 +369,23 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
         this.isReviewsLoading.set(false);
       }
     });
+  }
+
+  toggleStory(text: string) {
+    if (this.isSpeaking()) {
+      window.speechSynthesis.cancel();
+      this.isSpeaking.set(false);
+      return;
+    }
+    
+    window.speechSynthesis.cancel();
+    
+    this.speechUtterance = new SpeechSynthesisUtterance(text);
+    this.speechUtterance.onend = () => this.isSpeaking.set(false);
+    this.speechUtterance.onerror = () => this.isSpeaking.set(false);
+    
+    window.speechSynthesis.speak(this.speechUtterance);
+    this.isSpeaking.set(true);
   }
 
   submitReview() {
