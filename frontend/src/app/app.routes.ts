@@ -7,6 +7,8 @@ import { AdminLogin } from './pages/admin-login/admin-login';
 import { AdminDashboard } from './pages/admin-dashboard/admin-dashboard';
 import { VendorDetail } from './pages/vendor-detail/vendor-detail';
 import { UserLogin } from './pages/user-login/user-login';
+import { PrivacyPolicy } from './pages/privacy-policy/privacy-policy';
+import { TermsOfService } from './pages/terms-of-service/terms-of-service';
 import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
@@ -17,5 +19,7 @@ export const routes: Routes = [
   { path: 'login', component: UserLogin },
   { path: 'admin-login', component: AdminLogin },
   { path: 'admin-dashboard', component: AdminDashboard, canActivate: [authGuard] },
-  { path: 'vendor-detail/:id', component: VendorDetail }
+  { path: 'vendor-detail/:id', component: VendorDetail },
+  { path: 'privacy-policy', component: PrivacyPolicy },
+  { path: 'terms-of-service', component: TermsOfService }
 ];
