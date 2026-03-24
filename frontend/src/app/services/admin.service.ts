@@ -40,8 +40,17 @@ export class AdminService {
         );
     }
 
-    getPendingVendors(): Observable<any> {
-        return this.http.get(`${this.apiUrl}/vendors/pending`, { headers: this.getHeaders() }).pipe(
+    getVendorsByStatus(status: 'pending' | 'approved' | 'rejected' | 'verified'): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/vendors`, { 
+            headers: this.getHeaders(),
+            params: { status }
+        }).pipe(
+            catchError(handleHttpError(`List ${status}`))
+        );
+    }
+
+    getPendingVendors(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/vendors/pending`, { headers: this.getHeaders() }).pipe(
             catchError(handleHttpError('Pending'))
         );
     }
@@ -52,9 +61,21 @@ export class AdminService {
         );
     }
 
+    updateVendor(id: string, data: any): Observable<any> {
+        return this.http.put(`${this.apiUrl}/vendors/${id}`, data, { headers: this.getHeaders() }).pipe(
+            catchError(handleHttpError('Update'))
+        );
+    }
+
     rejectVendor(id: string): Observable<any> {
         return this.http.delete(`${this.apiUrl}/vendors/${id}/reject`, { headers: this.getHeaders() }).pipe(
             catchError(handleHttpError('Reject'))
+        );
+    }
+
+    deleteVendorPermanent(id: string): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/vendors/${id}/permanent`, { headers: this.getHeaders() }).pipe(
+            catchError(handleHttpError('DeletePermanent'))
         );
     }
 

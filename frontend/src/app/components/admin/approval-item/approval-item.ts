@@ -22,9 +22,12 @@ import { LucideAngularModule } from 'lucide-angular';
             </div>
           </div>
           <p class="text-xs text-gray-500 mb-2 flex items-center gap-1">
-            Submitted on {{ vendor.createdAt | date }} • {{ vendor.yearsInOperation }}
+            Submitted on {{ vendor.createdAt | date }}
+            <ng-container *ngIf="vendor.yearsInOperation || vendor.yearEstablished">
+               • {{ vendor.yearEstablished || vendor.yearsInOperation }}
+            </ng-container>
           </p>
-          <p class="text-sm text-gray-600 italic line-clamp-2 max-w-2xl">"{{ vendor.culturalStory }}"</p>
+          <p class="text-sm text-gray-600 italic line-clamp-2 max-w-2xl">"{{ vendor.historicalSignificance || vendor.culturalStory }}"</p>
         </div>
       </div>
       

@@ -160,13 +160,23 @@ exports.getRelatedVendors = async (req, res) => {
         if (!currentVendor) return res.status(404).json({ success: false, message: 'Vendor not found' });
 
         const oppositeCategory = currentVendor.category === 'Heritage Site' ? 'Local Eatery' : 'Heritage Site';
+        const coordinates = currentVendor.location.coordinates;
+        
+        // GeoJSON [lng, lat] format is required for $near
+        const [lng, lat] = Array.isArray(coordinates) ? coordinates : [coordinates.lng, coordinates.lat];
 
-        // Simulating "Nearby" by fetching random verified vendors of the opposite category.
-        // Once geolocation is added, this can be updated to use $near queries.
-        const related = await Vendor.aggregate([
-            { $match: { isVerified: true, category: oppositeCategory, _id: { $ne: currentVendor._id } } },
-            { $sample: { size: 3 } }
-        ]);
+        // Fetch the 3 closest verified vendors of the opposite category.
+        const related = await Vendor.find({
+            isVerified: true,
+            category: oppositeCategory,
+            _id: { $ne: currentVendor._id },
+            'location.coordinates': {
+                $near: {
+                    $geometry: { type: "Point", coordinates: [lng, lat] },
+                    $maxDistance: 10000 // 10km radius
+                }
+            }
+        }).limit(3);
 
         return res.status(200).json(related);
     } catch (err) {

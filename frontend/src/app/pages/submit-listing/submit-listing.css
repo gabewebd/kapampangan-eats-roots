@@ -1,6 +1,23 @@
 /* Map & Suggestions Styling */
 #map {
     z-index: 0;
+    width: 100% !important;
+    min-height: 300px;
+}
+
+/* Pierce Angular's view encapsulation to style Leaflet's internal DOM */
+:host ::ng-deep .leaflet-tile-container img {
+    width: 256px;
+    height: 256px;
+}
+
+:host ::ng-deep .leaflet-tile-pane {
+    z-index: 1;
+}
+
+:host ::ng-deep .leaflet-container {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .animate-in {

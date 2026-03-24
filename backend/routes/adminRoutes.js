@@ -9,13 +9,12 @@ router.use(authMiddleware);
 // Dashboard Overview Metrics
 router.get('/metrics', adminController.getDashboardMetrics);
 
-// Get Pending Vendor Approvals
+// Vendor Management
+router.get('/vendors', adminController.getVendorsByStatus);
 router.get('/vendors/pending', adminController.getPendingVendors);
-
-// Approve a Vendor
 router.put('/vendors/:id/approve', adminController.approveVendor);
-
-// Reject / Delete a Vendor
-router.delete('/vendors/:id/reject', adminController.rejectVendor);
+router.put('/vendors/:id', adminController.updateVendor); // New edit route
+router.delete('/vendors/:id/reject', adminController.rejectVendor); // Soft reject
+router.delete('/vendors/:id/permanent', adminController.deleteVendorPermanent); // Hard delete
 
 module.exports = router;

@@ -1,4 +1,4 @@
-<div class="w-full min-h-screen bg-[#FDF9F0] pb-[100px] md:pb-24 md:pt-[140px] font-sans md:px-8 lg:px-12 relative overflow-hidden flex flex-col items-center">
+<div class="w-full min-h-screen bg-white md:bg-[#FDF9F0] md:pb-24 md:pt-[140px] font-sans md:px-8 lg:px-12 relative overflow-hidden flex flex-col items-center">
   
   <!-- Subtle glowing background for desktop -->
   <div class="hidden md:block absolute top-[10%] left-1/2 w-[800px] h-[800px] bg-angeles-blue/10 rounded-full blur-[120px] -z-10 -translate-x-1/2 -translate-y-1/2"></div>
@@ -10,10 +10,10 @@
   </div>
 
   <!-- Main Split Card Container -->
-  <div *ngIf="!loading()" class="w-full max-w-[1100px] md:bg-white/80 md:backdrop-blur-2xl md:rounded-[40px] md:shadow-2xl md:shadow-blue-900/10 md:flex border border-white/60 relative z-10 overflow-hidden">
+  <div *ngIf="!loading()" class="w-full max-w-[1100px] md:bg-white/80 md:backdrop-blur-2xl md:rounded-[40px] md:shadow-2xl md:shadow-blue-900/10 md:flex md:border md:border-white/60 relative z-10 md:overflow-hidden">
     
     <!-- Blue Sidebar (Top on mobile, Left on desktop) -->
-    <div class="bg-gradient-to-b from-angeles-blue to-[#1a3a5a] text-white rounded-b-[48px] md:rounded-none md:w-[40%] lg:w-[35%] pt-16 md:pt-20 pb-16 md:pb-20 px-8 lg:px-12 relative overflow-hidden shadow-2xl md:shadow-none flex flex-col">
+    <div class="bg-gradient-to-b from-angeles-blue to-[#1a3a5a] text-white md:w-[40%] lg:w-[35%] pt-16 md:pt-20 pb-20 md:pb-20 px-6 md:px-8 lg:px-12 relative overflow-hidden shadow-xl md:shadow-none flex flex-col">
       <!-- Decorative background elements -->
       <div class="absolute top-[-10%] right-[-5%] w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
       <div class="absolute bottom-[-20%] left-[20%] w-64 h-64 bg-black/20 rounded-full blur-3xl"></div>
@@ -56,8 +56,8 @@
     </div>
 
     <!-- Right Content Area -->
-    <div class="px-6 md:px-10 lg:px-16 -mt-8 md:mt-0 relative z-20 md:w-[60%] lg:w-[65%] py-2 md:py-16 flex flex-col justify-center">
-      <div class="bg-white md:bg-transparent rounded-[32px] md:rounded-none shadow-2xl md:shadow-none p-2 md:p-0 space-y-4 md:space-y-10">
+    <div class="w-full relative z-20 md:px-10 lg:px-16 -mt-8 md:mt-0 md:w-[60%] lg:w-[65%] flex flex-col justify-center">
+      <div class="bg-white md:bg-transparent rounded-t-[40px] md:rounded-none shadow-[0_-15px_40px_-15px_rgba(0,0,0,0.15)] md:shadow-none px-6 pt-10 pb-5 md:p-0 space-y-6 md:space-y-10 min-h-screen md:min-h-0">
         
         <!-- Stats Card -->
         <div class="bg-white rounded-[28px] md:rounded-[32px] shadow-lg shadow-blue-900/5 md:shadow-xl md:shadow-blue-900/10 p-6 md:p-8 flex justify-between items-center border border-gray-100/50 hover:shadow-2xl transition-shadow md:bg-gradient-to-r md:from-white md:to-gray-50/50">

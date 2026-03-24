@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { LucideAngularModule, Camera, Store, Clock, BookOpen, Heart, ShieldCheck, Sparkles, X, Plus, Trash2, Check, Loader, Landmark, MapPin, Navigation, Info } from 'lucide-angular';
@@ -21,6 +21,9 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
   private router = inject(Router);
   private http = inject(HttpClient);
 
+  // Grab the map element safely via Angular's ViewChild (same pattern as explore-map)
+  @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
+
   submitForm: FormGroup;
   selectedFiles: File[] = [];
   readonly navigationIcon = Navigation;
@@ -42,7 +45,7 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
   constructor() {
     this.submitForm = this.fb.group({
       name: ['', Validators.required],
-      yearsInOperation: ['', Validators.required],
+      yearsInOperation: ['', [Validators.required, Validators.pattern(/^(\d+\s+years|Since\s+\d{4})$/i)]],
       category: ['Local Eatery', Validators.required],
       culturalStory: ['', [Validators.required, Validators.maxLength(500)]],
       address: ['', Validators.required],
@@ -52,7 +55,7 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
       menuHighlights: this.fb.array([]),
       // Heritage Site specific
       historicalSignificance: [''],
-      yearEstablished: ['']
+      yearEstablished: ['', Validators.pattern(/^\d{4}$/)]
     });
 
     // Setup address search debounce
@@ -78,37 +81,44 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
       
       const yearsControl = this.submitForm.get('yearsInOperation');
       const storyControl = this.submitForm.get('culturalStory');
+      const significanceControl = this.submitForm.get('historicalSignificance');
+      const establishedControl = this.submitForm.get('yearEstablished');
 
       if (isHeritage) {
         // Clear and make optional for Heritage Site
         yearsControl?.clearValidators();
         storyControl?.clearValidators();
+        
+        // Heritage Site requirements
+        significanceControl?.setValidators([Validators.required]);
+        establishedControl?.setValidators([Validators.required, Validators.pattern(/^\d{4}$/)]);
+        
         // Clear menu highlights
         while (this.menuHighlights.length) this.menuHighlights.removeAt(0);
         this.menuItemImages = [];
       } else {
         // Restore validators for Local Eatery
-        yearsControl?.setValidators([Validators.required]);
+        yearsControl?.setValidators([Validators.required, Validators.pattern(/^(\d+\s+years|Since\s+\d{4})$/i)]);
         storyControl?.setValidators([Validators.required, Validators.maxLength(500)]);
+        
+        // Clear heritage requirements
+        significanceControl?.clearValidators();
+        establishedControl?.setValidators([Validators.pattern(/^\d{4}$/)]);
+        
         // Clear heritage fields
         this.submitForm.patchValue({ historicalSignificance: '', yearEstablished: '' });
       }
       
       yearsControl?.updateValueAndValidity();
       storyControl?.updateValueAndValidity();
+      significanceControl?.updateValueAndValidity();
+      establishedControl?.updateValueAndValidity();
     });
   }
 
   ngAfterViewInit() {
+    // Matches explore-map pattern: init map directly in ngAfterViewInit
     this.initMap();
-    // Multiple attempts to fix tile rendering issues
-    [100, 500, 1000, 2000].forEach(delay => {
-      setTimeout(() => {
-        if (this.map) {
-          this.map.invalidateSize();
-        }
-      }, delay);
-    });
   }
 
   ngOnDestroy() {
@@ -117,8 +127,27 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  @HostListener('window:resize')
+  onResize() {
+    if (this.map) {
+      this.map.invalidateSize();
+    }
+  }
+
   private initMap() {
-    this.map = L.map('map', {
+    // Use the native element from ViewChild (same pattern as explore-map)
+    const mapEl = this.mapContainer?.nativeElement;
+
+    if (!mapEl) {
+      console.error('Audit: mapContainer element not found by ViewChild!');
+      return;
+    }
+
+    // Force the element to have explicit dimensions before Leaflet initializes
+    mapEl.style.width = '100%';
+    mapEl.style.height = '300px';
+
+    this.map = L.map(mapEl, {
       center: this.defaultCoords,
       zoom: 14,
       scrollWheelZoom: true
@@ -151,6 +180,14 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
         this.updateMarker(lat, lng);
         this.performReverseGeocoding(lat, lng);
     });
+
+    // Give Angular time to finish rendering the CSS layout,
+    // then force Leaflet to recalculate the size and fetch tiles.
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize();
+      }
+    }, 100);
   }
 
   private updateMarker(lat: number, lng: number) {
@@ -261,9 +298,57 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
     this.imagePreviews.splice(index, 1);
   }
 
+  dismissError() {
+    this.errorMessage.set('');
+  }
+
+  private playFeedbackSound(type: 'success' | 'error') {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioContext();
+      
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      if (type === 'success') {
+        // Cheerful arpeggiating Sparkle-like sound
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1); // A5
+        osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.2); // C6
+        
+        gainNode.gain.setValueAtTime(0, ctx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+        
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.8);
+      } else {
+        // Subtle error blip
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(300, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.3);
+        
+        gainNode.gain.setValueAtTime(0.5, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.3);
+      }
+    } catch(e) { /* Ignore audio errors */ }
+  }
+
   onSubmit() {
     if (this.submitForm.invalid || this.selectedFiles.length === 0) {
-      this.errorMessage.set('Audit: Form invalid. Ensure all required fields and at least one primary image are present.');
+      if (this.selectedFiles.length === 0) {
+          this.errorMessage.set('Please provide at least one photo of the vendor so the community can see it.');
+      } else {
+          this.errorMessage.set('Some fields are missing or invalid. Please review the highlighted boxes and try again.');
+      }
+      this.playFeedbackSound('error');
       this.submitForm.markAllAsTouched();
       return;
     }
@@ -303,11 +388,13 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
         console.log('Audit: Submission Success', res);
         this.isLoading.set(false);
         this.isSuccess.set(true);
+        this.playFeedbackSound('success');
         setTimeout(() => this.router.navigate(['/']), 2000);
       },
       error: (err) => {
         this.isLoading.set(false);
-        this.errorMessage.set(`Submission Failed: ${err.message}`);
+        this.errorMessage.set(`Network Error: We couldn't safely store your submission. Please try again! Error: ${err.message}`);
+        this.playFeedbackSound('error');
       }
     });
   }

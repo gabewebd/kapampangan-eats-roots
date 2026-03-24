@@ -21,238 +21,478 @@
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-8 py-10">
+    <main class="max-w-7xl mx-auto px-6 md:px-8 py-10">
         <!-- Header Section -->
-        <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="mb-10 flex flex-col lg:flex-row lg:items-end justify-between gap-8">
             <div>
-                <h2 class="text-3xl font-bold text-gray-900 tracking-tight mb-1">Admin Control Center</h2>
-                <p class="text-gray-500 font-medium">Verify submissions and monitor metrics — as of {{ today |
-                    date:'longDate' }}</p>
+                <h2 class="text-3xl md:text-4xl font-black text-gray-900 tracking-tight mb-2 font-serif">Admin Control Center</h2>
+                <p class="text-gray-500 font-medium text-base">Verify submissions and monitor metrics — as of {{ today | date:'longDate' }}</p>
             </div>
             
-            <!-- Tabs -->
-            <div class="flex bg-gray-100 p-1 rounded-xl">
+            <!-- Main Tabs -->
+            <div class="flex bg-gray-100 p-1.5 rounded-2xl w-fit">
                 <button (click)="activeTab.set('audit')" 
                         [class.bg-white]="activeTab() === 'audit'"
-                        [class.shadow-sm]="activeTab() === 'audit'"
-                        class="px-6 py-2 rounded-lg text-sm font-bold transition-all text-gray-700">
+                        [class.text-blue-800]="activeTab() === 'audit'"
+                        [class.shadow-md]="activeTab() === 'audit'"
+                        class="px-8 py-2.5 rounded-xl text-sm font-bold transition-all text-gray-500 flex items-center gap-2">
+                    <lucide-icon [name]="check" class="w-4 h-4"></lucide-icon>
                     Audit Review
                 </button>
                 <button (click)="activeTab.set('analytics')" 
                         [class.bg-white]="activeTab() === 'analytics'"
-                        [class.shadow-sm]="activeTab() === 'analytics'"
-                        class="px-6 py-2 rounded-lg text-sm font-bold transition-all text-gray-700">
-                    Analytics Dashboard
+                        [class.text-blue-800]="activeTab() === 'analytics'"
+                        [class.shadow-md]="activeTab() === 'analytics'"
+                        class="px-8 py-2.5 rounded-xl text-sm font-bold transition-all text-gray-500 flex items-center gap-2">
+                    <lucide-icon [name]="activity" class="w-4 h-4"></lucide-icon>
+                    Analytics
                 </button>
             </div>
         </div>
-            <div *ngIf="loading()" class="flex items-center gap-2 text-blue-600 text-sm font-bold">
-                <lucide-icon [name]="loader" class="w-4 h-4 animate-spin"></lucide-icon>
-                Scanning database...
+
+        <!-- Audit View -->
+        <ng-container *ngIf="activeTab() === 'audit'">
+            <!-- Status Sub-Tabs -->
+            <div class="flex flex-wrap gap-3 mb-10">
+                <button (click)="setAuditStatus('pending')"
+                    [class]="auditStatus() === 'pending' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-gray-600 hover:bg-gray-50'"
+                    class="px-5 py-2 rounded-full text-sm font-bold transition-all border border-transparent">
+                    Pending
+                </button>
+                <button (click)="setAuditStatus('approved')"
+                    [class]="auditStatus() === 'approved' ? 'bg-green-600 text-white shadow-lg shadow-green-200' : 'bg-white text-gray-600 hover:bg-gray-50'"
+                    class="px-5 py-2 rounded-full text-sm font-bold transition-all border border-transparent">
+                    Approved
+                </button>
+                <button (click)="setAuditStatus('verified')"
+                    [class]="auditStatus() === 'verified' ? 'bg-yellow-500 text-white shadow-lg shadow-yellow-200' : 'bg-white text-gray-600 hover:bg-gray-50'"
+                    class="px-5 py-2 rounded-full text-sm font-bold transition-all border border-transparent">
+                    Verified Authentic
+                </button>
+                <button (click)="setAuditStatus('rejected')"
+                    [class]="auditStatus() === 'rejected' ? 'bg-red-600 text-white shadow-lg shadow-red-200' : 'bg-white text-gray-600 hover:bg-gray-50'"
+                    class="px-5 py-2 rounded-full text-sm font-bold transition-all border border-transparent">
+                    Rejected
+                </button>
             </div>
 
-
-        <!-- Error State -->
-        <div *ngIf="error()"
-            class="bg-red-50 border border-red-100 p-6 rounded-2xl mb-10 flex items-center justify-between">
-            <div class="flex items-center gap-4 text-red-700">
-                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                    <lucide-icon [name]="activity" class="w-5 h-5"></lucide-icon>
-                </div>
-                <div>
-                    <p class="font-bold">Fetch Error</p>
-                    <p class="text-sm opacity-80">{{ error() }}</p>
-                </div>
-            </div>
-            <button (click)="refreshData()"
-                class="px-4 py-2 bg-white border border-red-100 text-red-700 rounded-lg text-sm font-bold hover:bg-red-100 transition-colors">
-                Retry Audit
-            </button>
-        </div>
-
-        <!-- Pending Approvals Section -->
-        <section *ngIf="activeTab() === 'audit'" class="mb-16 animate-in">
-            <div class="flex items-center justify-between mb-8">
-                <div>
-                    <h3 class="text-2xl font-bold text-gray-900 tracking-tight">Pending Listings</h3>
-                </div>
-                <span
-                    class="px-3 py-1 bg-yellow-50 text-yellow-700 rounded-full text-xs font-bold border border-yellow-100">
-                    {{ pendingVendors.length }} Pending
-                </span>
+            <!-- Loading/Error States -->
+            <div *ngIf="loading()" class="flex flex-col items-center py-20 animate-pulse">
+                <lucide-icon [name]="loader" class="w-12 h-12 text-blue-600 animate-spin mb-4"></lucide-icon>
+                <p class="text-gray-500 font-bold uppercase tracking-widest text-xs">Scanning database...</p>
             </div>
 
-            <div class="space-y-4" *ngIf="pendingVendors.length > 0; else noPending">
-                <div *ngFor="let vendor of pendingVendors">
-                    <app-approval-item [vendor]="vendor"
-                        (approve)="onApprove($event)" (reject)="onReject($event)">
-                    </app-approval-item>
-                    
-                    <!-- View Details Button -->
-                    <div class="mt-2 flex gap-2 ml-[104px]">
-                        <button (click)="viewDetails(vendor)" 
-                            class="text-sm font-bold text-angeles-blue hover:underline flex items-center gap-1.5">
-                            <lucide-icon name="eye" class="w-4 h-4"></lucide-icon>
-                            {{ selectedVendor()?._id === vendor._id ? 'Hide Details' : 'View Full Submission' }}
-                        </button>
-                        <button *ngIf="evaluatingVendorId() !== vendor._id" (click)="startEvaluation(vendor._id)"
-                            class="text-sm font-bold text-yellow-700 hover:text-yellow-800 flex items-center gap-1.5 ml-4">
-                            <lucide-icon name="badge-check" class="w-4 h-4"></lucide-icon>
-                            Evaluate ASF & Verify
-                        </button>
+            <div *ngIf="error()" class="bg-red-50 border border-red-100 p-8 rounded-3xl mb-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-5 text-red-700">
+                    <div class="w-14 h-14 rounded-2xl bg-red-100 flex items-center justify-center shrink-0">
+                        <lucide-icon [name]="activity" class="w-7 h-7"></lucide-icon>
                     </div>
-                    
-                    <!-- Expandable Detail View -->
-                    <div *ngIf="selectedVendor()?._id === vendor._id" 
-                         class="mt-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm space-y-6 animate-in">
-                        
-                        <!-- Photos -->
-                        <div *ngIf="vendor.images && vendor.images.length > 0">
-                            <h5 class="font-bold text-gray-900 mb-3 text-sm uppercase tracking-wider">Photos</h5>
-                            <div class="flex gap-3 overflow-x-auto pb-2">
-                                <img *ngFor="let img of vendor.images" [src]="img" 
-                                     class="w-24 h-24 rounded-xl object-cover shadow-sm border border-gray-100" alt="Vendor Photo">
-                            </div>
+                    <div>
+                        <p class="font-black text-lg">System Alert</p>
+                        <p class="text-sm opacity-90 font-medium">{{ error() }}</p>
+                    </div>
+                </div>
+                <button (click)="refreshData()" class="px-8 py-3 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-200">
+                    Retry Audit
+                </button>
+            </div>
+
+            <!-- Vendor List -->
+            <div class="space-y-6" *ngIf="!loading() && vendors().length > 0; else emptyState">
+                <div *ngFor="let vendor of vendors()" class="bg-white rounded-3xl p-5 md:p-6 shadow-sm border border-gray-100/50 hover:shadow-xl hover:border-blue-100 transition-all group overflow-hidden">
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <!-- Thumbnail -->
+                        <div class="w-full md:w-32 h-32 md:h-32 shrink-0 rounded-2xl overflow-hidden relative shadow-inner bg-gray-50">
+                            <img [src]="vendor.images && vendor.images.length ? vendor.images[0] : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=200&q=80'" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="">
+                            <div class="absolute inset-0 bg-black/5"></div>
                         </div>
 
-                        <!-- Cultural Story -->
-                        <div *ngIf="vendor.culturalStory">
-                            <h5 class="font-bold text-gray-900 mb-2 text-sm uppercase tracking-wider">Cultural Story</h5>
-                            <p class="text-gray-600 text-sm leading-relaxed italic bg-gray-50 p-4 rounded-xl">"{{ vendor.culturalStory }}"</p>
-                        </div>
-
-                        <!-- Menu Highlights (if eatery) -->
-                        <div *ngIf="vendor.menuHighlights && vendor.menuHighlights.length > 0">
-                            <h5 class="font-bold text-gray-900 mb-3 text-sm uppercase tracking-wider">Menu Highlights</h5>
-                            <div class="space-y-2">
-                                <div *ngFor="let item of vendor.menuHighlights" 
-                                     class="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
-                                    <img *ngIf="item.image" [src]="item.image" class="w-12 h-12 rounded-lg object-cover" alt="">
-                                    <div class="flex-1">
-                                        <p class="font-bold text-gray-900 text-sm">{{ item.name }}</p>
-                                        <p *ngIf="item.description" class="text-gray-500 text-xs">{{ item.description }}</p>
-                                    </div>
-                                    <span *ngIf="item.price" class="text-angeles-red font-bold text-sm">₱{{ item.price }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Heritage Info -->
-                        <div *ngIf="vendor.historicalSignificance">
-                            <h5 class="font-bold text-gray-900 mb-2 text-sm uppercase tracking-wider">Historical Significance</h5>
-                            <p class="text-gray-600 text-sm leading-relaxed bg-gray-50 p-4 rounded-xl">{{ vendor.historicalSignificance }}</p>
-                        </div>
-                        <div *ngIf="vendor.yearEstablished">
-                            <h5 class="font-bold text-gray-900 mb-2 text-sm uppercase tracking-wider">Year Established</h5>
-                            <p class="text-gray-800 font-bold bg-gray-50 p-4 rounded-xl">{{ vendor.yearEstablished }}</p>
-                        </div>
-
-                        <!-- Authenticity Traits -->
-                        <div *ngIf="vendor.authenticityTraits && vendor.authenticityTraits.length > 0">
-                            <h5 class="font-bold text-gray-900 mb-3 text-sm uppercase tracking-wider">Authenticity Traits</h5>
-                            <div class="flex flex-wrap gap-2">
-                                <span *ngFor="let trait of vendor.authenticityTraits" 
-                                      class="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-100">
-                                    {{ trait }}
+                        <!-- Info -->
+                        <div class="flex-1 flex flex-col justify-center">
+                            <div class="flex flex-wrap items-center gap-3 mb-2">
+                                <h4 class="text-xl font-bold text-gray-900 group-hover:text-blue-800 transition-colors font-serif italic">{{ vendor.name }}</h4>
+                                <span [class]="vendor.category === 'Heritage Site' ? 'bg-red-50 text-red-700 border-red-100' : 'bg-blue-50 text-blue-700 border-blue-100'"
+                                      class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border">
+                                    {{ vendor.category }}
+                                </span>
+                                <span *ngIf="vendor.isAuthentic" class="bg-yellow-100 text-yellow-800 border-yellow-200 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border flex items-center gap-1">
+                                    <lucide-icon [name]="star" class="w-3 h-3 fill-yellow-800" [strokeWidth]="0"></lucide-icon> Authentic
                                 </span>
                             </div>
+                            <p class="text-sm text-gray-400 font-medium mb-3 flex items-center gap-1">
+                                Submitted on {{ vendor.createdAt | date:'mediumDate' }} • 
+                                <ng-container [ngSwitch]="vendor.category">
+                                    <span *ngSwitchCase="'Heritage Site'">established {{ vendor.yearEstablished }}</span>
+                                    <span *ngSwitchDefault>{{ vendor.yearsInOperation }} in operation</span>
+                                </ng-container>
+                            </p>
+                            <p class="text-sm text-gray-500 line-clamp-2 max-w-2xl font-medium leading-relaxed italic">
+                                "{{ vendor.culturalStory }}"
+                            </p>
                         </div>
 
-                        <button (click)="closeDetails()" class="text-sm text-gray-400 hover:text-gray-600 font-bold flex items-center gap-1">
-                            <lucide-icon name="x" class="w-4 h-4"></lucide-icon> Close
-                        </button>
+                        <!-- Actions Row -->
+                        <div class="flex items-center gap-2 md:pl-6 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0">
+                            <!-- Contextual Action (Approve/Restore/Verify) -->
+                            <ng-container [ngSwitch]="auditStatus()">
+                                <button *ngSwitchCase="'pending'" (click)="onApprove(vendor._id)" 
+                                        class="bg-blue-800 hover:bg-blue-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-900/10 active:scale-95 transition-all">
+                                    <lucide-icon [name]="check" class="w-4 h-4"></lucide-icon> Approve
+                                </button>
+                                <button *ngSwitchCase="'approved'" (click)="startEvaluation(vendor._id)" 
+                                        class="bg-yellow-400 hover:bg-yellow-500 text-yellow-950 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-yellow-900/10 active:scale-95 transition-all">
+                                    <lucide-icon [name]="badgeCheck" class="w-4 h-4"></lucide-icon> Verify ASF
+                                </button>
+                                <button *ngSwitchCase="'rejected'" (click)="onRestore(vendor._id)" 
+                                        class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-green-900/10 active:scale-95 transition-all">
+                                    Restore
+                                </button>
+                            </ng-container>
+
+                            <!-- Common Actions -->
+                            <div class="flex items-center gap-1.5 ml-2">
+                                <button (click)="viewDetails(vendor)" title="View Details"
+                                        class="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">
+                                    <lucide-icon [name]="eye" class="w-5 h-5"></lucide-icon>
+                                </button>
+                                <button (click)="openEditModal(vendor)" title="Edit"
+                                        class="p-2.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all">
+                                    <lucide-icon [name]="pencil" class="w-5 h-5"></lucide-icon>
+                                </button>
+                                <button (click)="auditStatus() === 'rejected' ? onDeletePermanent(vendor._id) : onReject(vendor._id)" 
+                                        [title]="auditStatus() === 'rejected' ? 'Delete Permanently' : 'Reject'"
+                                        class="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
+                                    <lucide-icon [name]="trash" class="w-5 h-5"></lucide-icon>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- ASF Evaluation View -->
-                    <div *ngIf="evaluatingVendorId() === vendor._id" 
-                         class="mt-4 p-6 bg-gradient-to-br from-yellow-50 to-white rounded-2xl border border-yellow-200 shadow-sm animate-in ml-[104px]">
-                         <h4 class="font-bold text-gray-900 mb-4 text-lg">Authenticity Scoring Framework (ASF)</h4>
-                         <p class="text-sm text-gray-600 mb-6 font-medium">Score the vendor based on the 5 core criteria (1-10). A high score grants the Verified Authentic badge.</p>
+                    <!-- Inline ASF Evaluation (if active) -->
+                    <div *ngIf="evaluatingVendorId() === vendor._id" class="mt-8 p-8 bg-[#FFFDF0] rounded-3xl border border-yellow-200 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
+                        <div class="flex justify-between items-start mb-8">
+                            <div>
+                                <h5 class="text-xl font-black text-gray-900 mb-1 font-serif italic">Authenticity Scoring Framework (ASF)</h5>
+                                <p class="text-sm text-gray-500 font-medium">Verify heritage documentation and cultural impact</p>
+                            </div>
+                            <button (click)="cancelEvaluation()" class="p-2 hover:bg-yellow-100 rounded-full transition-colors">
+                                <lucide-icon [name]="xIcon" class="w-5 h-5 text-gray-400"></lucide-icon>
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 max-w-4xl">
+                            <div *ngFor="let criteria of [
+                                { key: 'historicalContinuity', label: 'Historical Continuity' },
+                                { key: 'culturalAuthenticity', label: 'Cultural Authenticity' },
+                                { key: 'communityRelevance', label: 'Community Relevance' },
+                                { key: 'heritageDocumentation', label: 'Heritage Documentation' },
+                                { key: 'digitalNarrativeQuality', label: 'Digital Narrative Quality' }
+                            ]" class="space-y-3">
+                                <div class="flex justify-between items-center px-1">
+                                    <label class="text-sm font-black text-gray-700 uppercase tracking-wider">{{ criteria.label }}</label>
+                                    <span class="text-lg font-black text-[#eab308]">{{ asfScores[criteria.key] }}<span class="text-gray-300 font-bold ml-1">/10</span></span>
+                                </div>
+                                <input type="range" [(ngModel)]="asfScores[criteria.key]" min="1" max="10" 
+                                       class="asf-slider"
+                                       [style.background]="'linear-gradient(to right, #eab308 ' + (asfScores[criteria.key] * 10) + '%, transparent ' + (asfScores[criteria.key] * 10) + '%)'">
+                            </div>
+                        </div>
 
-                         <div class="space-y-5 max-w-lg">
-                             <div>
-                                 <label class="flex justify-between text-sm font-bold text-gray-700 mb-2">Historical Continuity <span>{{ asfScores.historicalContinuity }}/10</span></label>
-                                 <input type="range" [(ngModel)]="asfScores.historicalContinuity" min="1" max="10" class="w-full accent-yellow-600">
-                             </div>
-                             <div>
-                                 <label class="flex justify-between text-sm font-bold text-gray-700 mb-2">Cultural Authenticity <span>{{ asfScores.culturalAuthenticity }}/10</span></label>
-                                 <input type="range" [(ngModel)]="asfScores.culturalAuthenticity" min="1" max="10" class="w-full accent-yellow-600">
-                             </div>
-                             <div>
-                                 <label class="flex justify-between text-sm font-bold text-gray-700 mb-2">Community Relevance <span>{{ asfScores.communityRelevance }}/10</span></label>
-                                 <input type="range" [(ngModel)]="asfScores.communityRelevance" min="1" max="10" class="w-full accent-yellow-600">
-                             </div>
-                             <div>
-                                 <label class="flex justify-between text-sm font-bold text-gray-700 mb-2">Heritage Documentation <span>{{ asfScores.heritageDocumentation }}/10</span></label>
-                                 <input type="range" [(ngModel)]="asfScores.heritageDocumentation" min="1" max="10" class="w-full accent-yellow-600">
-                             </div>
-                             <div>
-                                 <label class="flex justify-between text-sm font-bold text-gray-700 mb-2">Digital Narrative Quality <span>{{ asfScores.digitalNarrativeQuality }}/10</span></label>
-                                 <input type="range" [(ngModel)]="asfScores.digitalNarrativeQuality" min="1" max="10" class="w-full accent-yellow-600">
-                             </div>
-                         </div>
-                         
-                         <div class="mt-8 flex gap-3">
-                             <button (click)="onAuthenticate(vendor._id)" class="px-5 py-2.5 bg-yellow-400 text-yellow-900 font-bold rounded-xl shadow-sm hover:shadow-md transition-all">Submit Verification</button>
-                             <button (click)="cancelEvaluation()" class="px-5 py-2.5 bg-white text-gray-500 font-bold rounded-xl border border-gray-200 hover:bg-gray-50 transition-all">Cancel</button>
-                         </div>
+                        <div class="mt-10 flex flex-wrap gap-4 pt-8 border-t border-yellow-200 font-sans">
+                            <button (click)="onAuthenticate(vendor._id)" 
+                                    class="bg-[#eab308] text-yellow-950 px-8 py-3.5 rounded-2xl font-black hover:bg-yellow-500 transition-all shadow-md active:scale-95 flex items-center gap-2">
+                                <lucide-icon [name]="badgeCheck" class="w-5 h-5"></lucide-icon> Verify ASF
+                            </button>
+                            <button (click)="cancelEvaluation()" class="px-8 py-3.5 bg-white text-gray-500 font-bold rounded-2xl border border-gray-200 hover:bg-gray-50 transition-all">
+                                Back
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <ng-template #noPending>
-                <div class="bg-gray-50 rounded-3xl border-2 border-dashed border-gray-100 p-20 text-center">
-                    <div
-                        class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-6">
-                        <lucide-icon [name]="check" class="text-green-500 w-8 h-8"></lucide-icon>
+
+            <ng-template #emptyState>
+                <div class="bg-white rounded-[40px] border border-gray-100 p-20 text-center shadow-sm">
+                    <div class="w-24 h-24 bg-blue-50 rounded-3xl flex items-center justify-center mx-auto mb-8 animate-bounce transition-all">
+                        <lucide-icon [name]="check" class="text-blue-600 w-10 h-10"></lucide-icon>
                     </div>
-                    <h4 class="text-lg font-bold text-gray-900 mb-1">Audit Clear!</h4>
-                    <p class="text-gray-400 text-sm">All submissions have been successfully verified or rejected.</p>
+                    <h4 class="text-2xl font-black text-gray-900 mb-2 font-serif">Queue Clear!</h4>
+                    <p class="text-gray-400 font-medium max-w-sm mx-auto">No {{ auditStatus() }} listings found in the database. Everything is up to date.</p>
                 </div>
             </ng-template>
-        </section>
+        </ng-container>
 
-        <!-- Analytics Dashboard Section -->
-        <section *ngIf="activeTab() === 'analytics'" class="animate-in space-y-8">
-            <div *ngIf="metrics">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Total Vendors</p>
-                        <h4 class="text-3xl font-black text-angeles-blue mb-1">{{ metrics.totalVendors.count }}</h4>
-                        <p class="text-xs font-bold text-green-600">{{ metrics.totalVendors.growth }}</p>
+        <!-- Analytics Dashboard Section (Image 3 Inspiration) -->
+        <section *ngIf="activeTab() === 'analytics'" class="animate-in fade-in slide-in-from-bottom-6 duration-700 space-y-12">
+            <div *ngIf="metrics()">
+                <!-- Hero Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <div class="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 hover:shadow-xl transition-all">
+                        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-6">
+                            <lucide-icon [name]="star" class="text-blue-600 w-6 h-6"></lucide-icon>
+                        </div>
+                        <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Total Vendors</p>
+                        <h4 class="text-4xl font-black text-gray-900 mb-2">{{ metrics()?.totalVendors?.count }}</h4>
+                        <div class="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 rounded-full w-fit">
+                            <span class="text-[10px] font-black uppercase">{{ metrics()?.totalVendors?.growth }}</span>
+                        </div>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Verified</p>
-                        <h4 class="text-3xl font-black text-angeles-blue mb-1">{{ metrics.verifiedListings.count }}</h4>
-                        <p class="text-xs font-bold text-blue-600">{{ metrics.verifiedListings.verificationRate }}</p>
+                    
+                    <div class="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 hover:shadow-xl transition-all">
+                        <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center mb-6">
+                            <lucide-icon [name]="badgeCheck" class="text-green-600 w-6 h-6"></lucide-icon>
+                        </div>
+                        <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Verified</p>
+                        <h4 class="text-4xl font-black text-gray-900 mb-2">{{ metrics()?.verifiedListings?.count }}</h4>
+                        <p class="text-xs font-black text-blue-600 px-2.5 py-1 bg-blue-50 rounded-full w-fit">{{ metrics()?.verifiedListings?.verificationRate }}</p>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Most Visited</p>
-                        <h4 class="text-xl font-bold text-gray-900 mb-1 truncate">{{ metrics.mostVisitedSpot.name }}</h4>
-                        <p class="text-xs font-bold text-angeles-red">{{ metrics.mostVisitedSpot.views }}</p>
+
+                    <div class="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 hover:shadow-xl transition-all">
+                        <div class="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center mb-6">
+                            <lucide-icon [name]="eye" class="text-amber-600 w-6 h-6"></lucide-icon>
+                        </div>
+                        <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Top Spot</p>
+                        <h4 class="text-xl font-black text-gray-900 mb-1 truncate">{{ metrics()?.mostVisitedSpot?.name }}</h4>
+                        <p class="text-sm font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full w-fit">{{ metrics()?.mostVisitedSpot?.views }}</p>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Trending Dish</p>
-                        <h4 class="text-xl font-bold text-gray-900 mb-1 truncate">{{ metrics.trendingDish.name }}</h4>
-                        <p class="text-xs font-bold text-yellow-600">{{ metrics.trendingDish.searches }}</p>
+
+                    <div class="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 hover:shadow-xl transition-all">
+                        <div class="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center mb-6">
+                            <lucide-icon [name]="activity" class="text-purple-600 w-6 h-6"></lucide-icon>
+                        </div>
+                        <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Trending Dish</p>
+                        <h4 class="text-xl font-black text-gray-900 mb-1 truncate">{{ metrics()?.trendingDish?.name }}</h4>
+                        <p class="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full w-fit italic">{{ metrics()?.trendingDish?.searches }}</p>
                     </div>
                 </div>
                 
-                <h3 class="text-2xl font-bold text-gray-900 tracking-tight mb-6">Cultural Impact</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-angeles-yellow/10 p-8 rounded-3xl border border-angeles-yellow/20">
-                        <h4 class="text-4xl font-black text-yellow-800 mb-2">{{ metrics.culturalImpact.heritageEateriesListed.percentage }}</h4>
-                        <p class="text-yellow-900 font-medium">{{ metrics.culturalImpact.heritageEateriesListed.description }}</p>
-                    </div>
-                    <div class="bg-angeles-blue/10 p-8 rounded-3xl border border-angeles-blue/20">
-                        <h4 class="text-4xl font-black text-blue-800 mb-2">{{ metrics.culturalImpact.kapampanganDishesFeatured.count }}</h4>
-                        <p class="text-blue-900 font-medium">{{ metrics.culturalImpact.kapampanganDishesFeatured.description }}</p>
+                <!-- Cultural Impact Section (Image 3 Cards) -->
+                <div>
+                    <h3 class="text-2xl md:text-3xl font-black text-gray-900 tracking-tight mb-8 font-serif">Cultural Impact Insights</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Card 1 (Red) -->
+                        <div class="bg-white p-8 rounded-[40px] shadow-sm border-t-4 border-red-600 hover:shadow-2xl transition-all">
+                            <lucide-icon [img]="landmark" class="text-red-600 w-8 h-8 mb-6"></lucide-icon>
+                            <h4 class="text-4xl font-black text-red-800 mb-2 font-serif">{{ metrics()?.culturalImpact?.heritageSitesListed?.percentage }}</h4>
+                            <p class="text-lg font-bold text-gray-900 mb-1">Heritage Sites Listed</p>
+                            <p class="text-xs font-black text-red-600 uppercase tracking-widest mb-3">{{ metrics()?.culturalImpact?.heritageSitesListed?.count }}</p>
+                            <p class="text-sm text-gray-400 font-medium">{{ metrics()?.culturalImpact?.heritageSitesListed?.description }}</p>
+                        </div>
+                        <!-- Card 2 (Blue) -->
+                        <div class="bg-white p-8 rounded-[40px] shadow-sm border-t-4 border-blue-600 hover:shadow-2xl transition-all">
+                            <lucide-icon [img]="book" class="text-blue-600 w-8 h-8 mb-6"></lucide-icon>
+                            <h4 class="text-4xl font-black text-blue-800 mb-2 font-serif">{{ metrics()?.culturalImpact?.culturalStoriesShared?.percentage }}</h4>
+                            <p class="text-lg font-bold text-gray-900 mb-1">Cultural Stories Shared</p>
+                            <p class="text-xs font-black text-blue-600 uppercase tracking-widest mb-3">{{ metrics()?.culturalImpact?.culturalStoriesShared?.count }}</p>
+                            <p class="text-sm text-gray-400 font-medium">{{ metrics()?.culturalImpact?.culturalStoriesShared?.description }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div *ngIf="!metrics && !loading()" class="bg-gray-50 p-12 rounded-3xl text-center border border-gray-100">
-                <p class="text-gray-500 font-medium">No analytics data available yet.</p>
+            <div *ngIf="!metrics() && !loading()" class="bg-white py-32 rounded-[40px] text-center border border-gray-100">
+                <p class="text-gray-400 font-bold uppercase tracking-widest">No analytics data synced.</p>
             </div>
         </section>
     </main>
+
+    <!-- PREMIUM MODALS (Blurred Background) -->
+    
+    <!-- Detail Modal -->
+    <div *ngIf="isDetailModalOpen() && selectedVendor()" class="fixed inset-0 z-[60] flex items-center justify-center p-4 md:p-8 animate-in fade-in duration-300">
+        <!-- Backdrop Blur -->
+        <div (click)="closeModals()" class="absolute inset-0 bg-gray-900/60 backdrop-blur-xl transition-all"></div>
+        
+        <!-- Modal Card -->
+        <div class="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
+            <!-- Header Image + Content -->
+            <div class="h-64 md:h-80 w-full relative shrink-0">
+                <img [src]="selectedVendor().images && selectedVendor().images.length ? selectedVendor().images[0] : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80'" 
+                     class="w-full h-full object-cover" alt="">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                <button (click)="closeModals()" class="absolute top-6 right-6 p-2.5 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-full text-white transition-all">
+                    <lucide-icon [name]="xIcon" class="w-6 h-6"></lucide-icon>
+                </button>
+                <div class="absolute bottom-6 left-8 right-8">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest italic shadow-lg">Admin View</span>
+                        <span *ngIf="selectedVendor().isAuthentic" class="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest italic shadow-lg">Verified Authentic</span>
+                    </div>
+                    <h3 class="text-3xl md:text-5xl font-black text-white drop-shadow-md font-serif italic">{{ selectedVendor().name }}</h3>
+                </div>
+            </div>
+
+            <!-- Scrollable Body -->
+            <div class="flex-1 overflow-y-auto p-8 md:p-12 custom-scrollbar">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    <!-- Main Content -->
+                    <div class="md:col-span-2 space-y-10">
+                        <section>
+                            <h5 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Cultural Story & Narrative</h5>
+                            <p class="text-lg md:text-xl text-gray-700 font-medium leading-relaxed italic font-serif">
+                                "{{ selectedVendor().culturalStory }}"
+                            </p>
+                        </section>
+
+                        <section *ngIf="selectedVendor().historicalSignificance">
+                            <h5 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Historical Significance</h5>
+                            <div class="bg-blue-50/50 p-6 rounded-3xl border border-blue-100/50">
+                                <p class="text-gray-700 leading-relaxed font-medium">
+                                    {{ selectedVendor().historicalSignificance }}
+                                </p>
+                            </div>
+                        </section>
+
+                        <section *ngIf="selectedVendor().menuHighlights?.length">
+                            <h5 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">Signature Dishes / Menu</h5>
+                            <div class="grid grid-cols-1 gap-4">
+                                <div *ngFor="let item of selectedVendor().menuHighlights" class="flex items-center gap-5 p-4 bg-gray-50 rounded-[28px] hover:bg-gray-100 transition-all border border-transparent hover:border-blue-100">
+                                    <img *ngIf="item.image" [src]="item.image" class="w-20 h-20 rounded-2xl object-cover shadow-sm" alt="">
+                                    <div class="flex-1">
+                                        <h6 class="font-black text-gray-900 text-lg">{{ item.name }}</h6>
+                                        <p class="text-sm text-gray-500 font-medium line-clamp-1">{{ item.description }}</p>
+                                    </div>
+                                    <span class="text-xl font-black text-blue-800">₱{{ item.price }}</span>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Sidebar Info -->
+                    <div class="space-y-10">
+                        <section>
+                            <h5 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Core Attributes</h5>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-2xl flex flex-col gap-1">
+                                    <span class="text-[10px] font-black text-gray-400 uppercase">Category</span>
+                                    <span class="font-bold text-gray-900">{{ selectedVendor().category }}</span>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-2xl flex flex-col gap-1">
+                                    <span class="text-[10px] font-black text-gray-400 uppercase">Established</span>
+                                    <span class="font-bold text-gray-900">{{ selectedVendor().yearEstablished || selectedVendor().yearsInOperation || 'N/A' }}</span>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-2xl flex flex-col gap-1">
+                                    <span class="text-[10px] font-black text-gray-400 uppercase">Location</span>
+                                    <span class="font-bold text-sm text-gray-900">{{ selectedVendor().location.address }}</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section *ngIf="selectedVendor().authenticityTraits?.length">
+                            <h5 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Authenticity Traits</h5>
+                            <div class="flex flex-wrap gap-2">
+                                <span *ngFor="let trait of selectedVendor().authenticityTraits" class="px-3 py-1.5 bg-blue-800 text-white rounded-full text-[10px] font-black uppercase tracking-wider">
+                                    {{ trait }}
+                                </span>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-8 border-t border-gray-100 flex justify-end gap-3 bg-white shrink-0">
+                <button (click)="closeModals()" class="px-8 py-3.5 text-gray-500 font-black text-sm uppercase tracking-widest hover:text-gray-900 hover:bg-gray-50 rounded-2xl transition-all">
+                    Dismiss View
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div *ngIf="isEditModalOpen() && selectedVendor()" class="fixed inset-0 z-[60] flex items-center justify-center p-4 md:p-8 animate-in fade-in duration-300">
+        <div (click)="closeModals()" class="absolute inset-0 bg-blue-900/40 backdrop-blur-md transition-all"></div>
+        <div [formGroup]="editForm" class="relative w-full max-w-2xl bg-white rounded-[40px] shadow-2xl p-8 md:p-12 overflow-y-auto max-h-[90vh] animate-in zoom-in-95 duration-300">
+            <h3 class="text-3xl font-black text-gray-900 mb-8 border-b border-gray-100 pb-6 flex items-center gap-3 font-serif italic">
+                <lucide-icon [name]="pencil" class="text-amber-500 w-8 h-8"></lucide-icon>
+                Edit Listing Info
+            </h3>
+            
+            <div class="space-y-6">
+                <!-- Name -->
+                <div class="space-y-2">
+                    <label class="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Vendor Name</label>
+                    <input type="text" formControlName="name" 
+                        [class.border-red-500]="editForm.get('name')?.invalid && editForm.get('name')?.touched"
+                        class="w-full bg-gray-50 border-2 border-transparent focus:border-blue-600 focus:bg-white rounded-2xl px-5 py-4 font-bold text-gray-900 outline-none transition-all">
+                </div>
+
+                <!-- Category-Specific Fields -->
+                <ng-container *ngIf="editForm.get('category')?.value === 'Local Eatery'">
+                    <div class="space-y-2">
+                        <label class="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Cultural Story</label>
+                        <textarea rows="4" formControlName="culturalStory" 
+                            [class.border-red-500]="editForm.get('culturalStory')?.invalid && editForm.get('culturalStory')?.touched"
+                            class="w-full bg-gray-50 border-2 border-transparent focus:border-blue-600 focus:bg-white rounded-2xl px-5 py-4 font-bold text-gray-900 outline-none transition-all resize-none"></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Years Op. (e.g., "15 years" or "Since 2006")</label>
+                        <input type="text" formControlName="yearsInOperation" 
+                            [class.border-red-500]="editForm.get('yearsInOperation')?.invalid && editForm.get('yearsInOperation')?.touched"
+                            class="w-full bg-gray-50 border-2 border-transparent focus:border-blue-600 focus:bg-white rounded-2xl px-5 py-4 font-bold text-gray-900 outline-none transition-all">
+                        <p *ngIf="editForm.get('yearsInOperation')?.invalid && editForm.get('yearsInOperation')?.touched" class="text-[10px] font-black text-red-500 uppercase tracking-tighter ml-1">
+                            Invalid format. Use "15 years" or "Since 2006".
+                        </p>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="editForm.get('category')?.value === 'Heritage Site'">
+                    <div class="space-y-2">
+                        <label class="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Historical Significance</label>
+                        <textarea rows="4" formControlName="historicalSignificance" 
+                            [class.border-red-500]="editForm.get('historicalSignificance')?.invalid && editForm.get('historicalSignificance')?.touched"
+                            class="w-full bg-gray-50 border-2 border-transparent focus:border-blue-600 focus:bg-white rounded-2xl px-5 py-4 font-bold text-gray-900 outline-none transition-all resize-none"></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Year Established (YYYY)</label>
+                        <input type="text" formControlName="yearEstablished" 
+                            [class.border-red-500]="editForm.get('yearEstablished')?.invalid && editForm.get('yearEstablished')?.touched"
+                            class="w-full bg-gray-50 border-2 border-transparent focus:border-blue-600 focus:bg-white rounded-2xl px-5 py-4 font-bold text-gray-900 outline-none transition-all">
+                    </div>
+                </ng-container>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Address</label>
+                    <input type="text" formControlName="address" 
+                        [class.border-red-500]="editForm.get('address')?.invalid && editForm.get('address')?.touched"
+                        class="w-full bg-gray-50 border-2 border-transparent focus:border-blue-600 focus:bg-white rounded-2xl px-5 py-4 font-bold text-gray-900 outline-none transition-all">
+                </div>
+            </div>
+
+            <div class="mt-12 flex gap-4 border-t border-gray-100 pt-8">
+                <button (click)="saveEdit()" 
+                    [disabled]="editForm.invalid && editForm.touched"
+                    [class.opacity-50]="editForm.invalid && editForm.touched"
+                    class="flex-1 bg-blue-800 text-white py-4 rounded-2xl font-black text-lg hover:bg-blue-900 transition-all shadow-xl shadow-blue-900/10 active:scale-[0.98]">
+                    Save Changes
+                </button>
+                <button (click)="closeModals()" class="px-8 py-4 bg-gray-50 text-gray-400 font-bold rounded-2xl hover:bg-gray-100 transition-all">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Confirmation Modal -->
+    <div *ngIf="confirmDialog().isOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
+        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-xl" (click)="closeConfirm()"></div>
+        <div class="relative z-10 w-full max-w-md bg-white rounded-[40px] shadow-2xl p-10 text-center animate-in zoom-in duration-300">
+            <div [class]="confirmDialog().isDanger ? 'bg-red-50 text-red-500 border-red-100' : 'bg-blue-50 text-blue-600 border-blue-100'" 
+                 class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border shadow-inner">
+                 <lucide-icon [name]="confirmDialog().isDanger ? trash : badgeCheck" class="w-10 h-10"></lucide-icon>
+            </div>
+            <h3 class="text-2xl font-black text-gray-900 mb-2 font-serif italic">{{ confirmDialog().title }}</h3>
+            <p class="text-gray-500 font-medium mb-8 leading-relaxed">{{ confirmDialog().message }}</p>
+            <div class="flex flex-col gap-3">
+                <button (click)="confirmDialog().action()" 
+                        [class]="confirmDialog().isDanger ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-800 hover:bg-blue-900'"
+                        class="w-full py-4 text-white font-black rounded-2xl transition-all shadow-lg active:scale-[0.98]">
+                    {{ notificationMode() ? 'Great, thanks!' : 'Confirm Action' }}
+                </button>
+                <button *ngIf="!notificationMode()" (click)="closeConfirm()" class="w-full py-4 bg-gray-50 text-gray-500 font-bold rounded-2xl hover:bg-gray-100 transition-all">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

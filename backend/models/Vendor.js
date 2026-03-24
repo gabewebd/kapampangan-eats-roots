@@ -34,6 +34,11 @@ const VendorSchema = new mongoose.Schema({
     views: { type: Number, default: 0 },
     isVerified: { type: Boolean, default: false }, // For Admin Approval
     isAuthentic: { type: Boolean, default: false }, // Special yellow badge
+    status: { 
+        type: String, 
+        enum: ['pending', 'approved', 'rejected'], 
+        default: 'pending' 
+    },
     asfScores: {
         historicalContinuity: { type: Number, default: 0, min: 0, max: 10 },
         culturalAuthenticity: { type: Number, default: 0, min: 0, max: 10 },
