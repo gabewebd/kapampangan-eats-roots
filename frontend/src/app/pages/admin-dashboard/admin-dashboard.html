@@ -128,7 +128,7 @@
                                 </ng-container>
                             </p>
                             <p class="text-sm text-gray-500 line-clamp-2 max-w-2xl font-medium leading-relaxed italic">
-                                "{{ vendor.culturalStory }}"
+                                "{{ vendor.category === 'Heritage Site' ? vendor.historicalSignificance : vendor.culturalStory }}"
                             </p>
                         </div>
 
@@ -328,7 +328,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
                     <!-- Main Content -->
                     <div class="md:col-span-2 space-y-10">
-                        <section>
+                        <section *ngIf="selectedVendor().category === 'Local Eatery' && selectedVendor().culturalStory">
                             <h5 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Cultural Story & Narrative</h5>
                             <p class="text-lg md:text-xl text-gray-700 font-medium leading-relaxed italic font-serif">
                                 "{{ selectedVendor().culturalStory }}"
@@ -382,7 +382,9 @@
                         <section *ngIf="selectedVendor().authenticityTraits?.length">
                             <h5 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Authenticity Traits</h5>
                             <div class="flex flex-wrap gap-2">
-                                <span *ngFor="let trait of selectedVendor().authenticityTraits" class="px-3 py-1.5 bg-blue-800 text-white rounded-full text-[10px] font-black uppercase tracking-wider">
+                                <span *ngFor="let trait of selectedVendor().authenticityTraits" 
+                                      class="px-3 py-1.5 bg-blue-50 text-blue-800 border border-blue-100 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                                    <div class="w-1 h-1 bg-blue-400 rounded-full"></div>
                                     {{ trait }}
                                 </span>
                             </div>

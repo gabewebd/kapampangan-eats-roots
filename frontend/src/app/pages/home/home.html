@@ -107,7 +107,9 @@
                   {{spot.rating}}
                 </div>
               </div>
-              <p class="text-[14px] md:text-[15px] text-gray-500 line-clamp-2 mb-4">{{spot.culturalStory}}</p>
+              <p class="text-[14px] md:text-[15px] text-gray-500 line-clamp-2 mb-4">
+                {{ spot.category === 'Heritage Site' ? spot.historicalSignificance : spot.culturalStory }}
+              </p>
             </div>
             <div
               class="mt-auto flex items-center gap-1.5 text-angeles-blue font-bold text-sm lg:opacity-0 group-hover:opacity-100 transition-all duration-300 transform lg:translate-y-2 group-hover:translate-y-0">
@@ -150,7 +152,9 @@
             <h3
               class="font-bold text-base md:text-lg text-gray-900 line-clamp-1 group-hover:text-angeles-blue transition-colors">
               {{highlight.name}}</h3>
-            <p class="text-[13px] md:text-[14px] text-gray-500 line-clamp-2 mb-3">{{highlight.culturalStory}}</p>
+            <p class="text-[13px] md:text-[14px] text-gray-500 line-clamp-2 mb-3">
+              {{ highlight.category === 'Heritage Site' ? highlight.historicalSignificance : highlight.culturalStory }}
+            </p>
             <div
               class="mt-auto flex items-center gap-1.5 text-angeles-blue font-bold text-[13px] lg:opacity-0 group-hover:opacity-100 transition-all duration-300 transform lg:translate-y-1 group-hover:translate-y-0">
               Explore History <lucide-icon [name]="arrowRight" class="w-3.5 h-3.5"></lucide-icon>

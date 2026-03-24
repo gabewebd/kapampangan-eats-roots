@@ -50,7 +50,7 @@
           </div>
           <div class="flex items-center gap-1.5 md:gap-2">
             <lucide-icon name="clock" class="w-4 h-4 md:w-5 md:h-5 text-angeles-yellow"></lucide-icon>
-            {{ vendor.yearsInOperation }}
+            {{ vendor.category === 'Heritage Site' ? 'Established ' + vendor.yearEstablished : vendor.yearsInOperation }}
           </div>
           <div class="flex items-center gap-1">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 md:w-5 md:h-5 text-angeles-yellow fill-angeles-yellow" style="fill: #FCD116;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -132,7 +132,8 @@
           </div>
           <div class="flex items-center gap-4 text-sm font-bold text-gray-400 uppercase tracking-[0.2em]">
             <span class="w-12 h-[2px] bg-angeles-yellow"></span>
-            {{ vendor.name }} • {{ vendor.yearEstablished || vendor.yearsInOperation }}
+            {{ vendor.name }} • 
+            <span class="ml-1 opacity-70">{{ vendor.category === 'Heritage Site' ? 'ESTABLISHED ' + vendor.yearEstablished : vendor.yearsInOperation }}</span>
           </div>
         </section>
 
@@ -363,7 +364,9 @@
                 <span class="text-[10px] font-bold uppercase tracking-widest text-angeles-blue">{{ spot.category }}</span>
             </div>
             <h4 class="font-bold text-gray-900 text-xl group-hover:text-angeles-blue transition-colors line-clamp-1 mb-2">{{ spot.name }}</h4>
-            <p class="text-sm text-gray-500 line-clamp-2 leading-relaxed italic pr-2">"{{ spot.culturalStory }}"</p>
+            <p class="text-sm text-gray-500 line-clamp-2 leading-relaxed italic pr-2">
+                "{{ spot.category === 'Heritage Site' ? spot.historicalSignificance : spot.culturalStory }}"
+            </p>
           </div>
         </a>
       </div>
