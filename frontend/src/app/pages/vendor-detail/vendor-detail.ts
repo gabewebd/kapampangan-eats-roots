@@ -51,6 +51,9 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
 
   selectedMenuItem = signal<any>(null);
   showMenuPopup = signal(false);
+  
+  selectedGalleryImage = signal<string | null>(null);
+  showGalleryPopup = signal(false);
   private map?: L.Map;
   private marker?: L.Marker;
 
@@ -272,7 +275,7 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
     if (navigator.share) {
       navigator.share({
         title: this.vendor.name,
-        text: `Taste the Story. Discover the Roots of ${this.vendor.name} in Angeles City!`,
+        text: `Taste the Story. Discover the Kapampangan Roots of ${this.vendor.name}!`,
         url: window.location.href
       }).catch(err => {
         console.log('Action [Share]: Native share failed', err);
@@ -423,5 +426,15 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   closeMenuPopup() {
     this.showMenuPopup.set(false);
     setTimeout(() => this.selectedMenuItem.set(null), 300);
+  }
+
+  openGalleryPopup(image: string) {
+    this.selectedGalleryImage.set(image);
+    this.showGalleryPopup.set(true);
+  }
+
+  closeGalleryPopup() {
+    this.showGalleryPopup.set(false);
+    setTimeout(() => this.selectedGalleryImage.set(null), 300);
   }
 }

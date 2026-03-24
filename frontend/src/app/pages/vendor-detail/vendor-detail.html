@@ -324,8 +324,8 @@
         <section *ngIf="vendor.images.length > 1">
           <h3 class="font-serif text-3xl font-bold text-gray-900 mb-8">Gallery</h3>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <img *ngFor="let img of vendor.images.slice(1)" [src]="img"
-              class="w-full h-48 md:h-64 object-cover rounded-[32px] shadow-md hover:shadow-2xl hover:scale-[1.02] transition-all duration-500 cursor-zoom-in"
+            <img *ngFor="let img of vendor.images.slice(1)" [src]="img" (click)="openGalleryPopup(img)"
+              class="w-full h-48 md:h-64 object-cover rounded-[32px] shadow-md hover:shadow-2xl hover:scale-[1.02] transition-all duration-500 cursor-pointer"
               alt="Gallery Image">
           </div>
         </section>
@@ -511,5 +511,18 @@
       <span *ngIf="!isSubmittingReview()">Submit Review</span>
       <lucide-icon *ngIf="isSubmittingReview()" name="loader" class="w-5 h-5 animate-spin mx-auto"></lucide-icon>
     </button>
+  </div>
+</div>
+<!-- Gallery Lightbox Popup -->
+<div *ngIf="showGalleryPopup() && selectedGalleryImage()" class="fixed inset-0 z-[120] flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-black/90 backdrop-blur-md" (click)="closeGalleryPopup()"></div>
+  <div class="relative z-10 w-full max-w-5xl h-full flex items-center justify-center animate-in zoom-in fade-in duration-300">
+    <button (click)="closeGalleryPopup()"
+      class="absolute top-4 right-4 md:top-8 md:right-8 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all z-20">
+      <lucide-icon name="x" class="w-6 h-6 md:w-8 md:h-8"></lucide-icon>
+    </button>
+    <img [src]="selectedGalleryImage()"
+      class="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl shadow-black/50"
+      [alt]="'Gallery Full Image'">
   </div>
 </div>
