@@ -47,6 +47,7 @@ export class VendorDetail implements OnInit {
   };
 
   isLoading = signal(true);
+  isReviewsLoading = signal(true);
   error = '';
 
   constructor() {
@@ -59,14 +60,17 @@ export class VendorDetail implements OnInit {
         const id = params.get('id');
         if (id) {
           this.loadVendor(id);
+          this.loadReviews(id);
         } else {
           this.error = 'No Vendor ID provided.';
           this.isLoading.set(false);
+          this.isReviewsLoading.set(false);
         }
       },
       error: (err) => {
         console.error('VendorDetail paramMap error', err);
         this.isLoading.set(false);
+        this.isReviewsLoading.set(false);
       }
     });
   }
@@ -89,7 +93,6 @@ export class VendorDetail implements OnInit {
         this.vendor = data;
         this.isLoading.set(false);
         this.checkIfFavorite();
-        this.loadReviews();
         
         // Fetch related contextual spots
         this.vendorService.getRelatedVendors(id).pipe(
@@ -223,11 +226,19 @@ export class VendorDetail implements OnInit {
     this.showReviewModal.set(true);
   }
 
-  loadReviews() {
-    if (!this.vendor) return;
-    this.reviewService.getReviews(this.vendor._id).subscribe({
+  loadReviews(vendorId?: string) {
+    const id = vendorId || this.vendor?._id;
+    if (!id) return;
+    
+    this.isReviewsLoading.set(true);
+    this.reviewService.getReviews(id).subscribe({
       next: (data) => {
         this.reviews = data;
+        this.isReviewsLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Action [Reviews]: Fetch failed', err);
+        this.isReviewsLoading.set(false);
       }
     });
   }
