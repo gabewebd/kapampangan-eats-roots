@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Search, BadgeCheck, MapPin, Star, Utensils, Landmark, ArrowRight, Loader } from 'lucide-angular';
 import { VendorService, Vendor } from '../../services/vendor';
 import { Router, RouterModule, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, RouterModule, RouterLink],
+  imports: [CommonModule, LucideAngularModule, RouterModule, RouterLink, FormsModule],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -28,6 +29,8 @@ export class Home implements OnInit {
   culturalHighlights: Vendor[] = [];
   activeCategory = 'trending';
   loading = signal(true);
+  searchQuery = '';
+  isSearching = false;
 
   ngOnInit() {
     console.log('Audit: Home component initialized');
@@ -60,6 +63,8 @@ export class Home implements OnInit {
 
   setCategory(category: string) {
     this.activeCategory = category;
+    this.isSearching = false;
+    this.searchQuery = '';
     this.loading.set(true);
 
     const obs$ = category === 'local-eateries'
@@ -79,4 +84,24 @@ export class Home implements OnInit {
 
   goToDetail(id: string) { this.router.navigate(['/vendor-detail', id]); }
   goToSubmit() { this.router.navigate(['/submit']); }
+
+  performSearch() {
+    if (!this.searchQuery.trim()) {
+      this.setCategory(this.activeCategory);
+      return;
+    }
+
+    this.loading.set(true);
+    this.isSearching = true;
+    this.vendorService.search(this.searchQuery).subscribe({
+      next: (data) => {
+        this.trendingSpots = data;
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Search failure', err);
+        this.loading.set(false);
+      }
+    });
+  }
 }

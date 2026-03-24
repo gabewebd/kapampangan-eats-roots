@@ -95,4 +95,10 @@ export class VendorService {
       catchError(handleHttpError(`Related Vendors ${id}`))
     );
   }
+  
+  search(query: string): Observable<Vendor[]> {
+    return this.http.get<Vendor[]>(`${this.apiUrl}/search?q=${query}`).pipe(
+      catchError(handleHttpError('Search'))
+    );
+  }
 }
