@@ -9,6 +9,7 @@ import { AuthService } from '../../services/auth';
 import { UserService } from '../../services/user.service';
 import { ReviewService, Review } from '../../services/review.service';
 import { timeout, catchError, of } from 'rxjs';
+import { VoiceStoryService } from '../../services/voice-story.service';
 
 @Component({
   selector: 'app-vendor-detail',
@@ -32,6 +33,7 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   private userService = inject(UserService);
   private reviewService = inject(ReviewService);
   private router = inject(Router);
+  private voiceService = inject(VoiceStoryService);
 
   vendor: Vendor | null = null;
   relatedVendors: Vendor[] = [];
@@ -54,6 +56,7 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
 
   isLoading = signal(true);
   isReviewsLoading = signal(true);
+  isSpeaking = this.voiceService.isSpeaking;
   error = '';
 
   constructor() {
@@ -86,6 +89,7 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.voiceService.stop();
     if (this.map) {
       this.map.remove();
     }
@@ -419,5 +423,13 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
         this.isSubmittingReview.set(false);
       }
     });
+  }
+
+  toggleStory(text: string) {
+    if (this.isSpeaking()) {
+      this.voiceService.stop();
+    } else {
+      this.voiceService.speak(text);
+    }
   }
 }
