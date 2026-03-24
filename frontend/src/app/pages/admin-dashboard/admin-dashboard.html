@@ -53,27 +53,67 @@
         <!-- Audit View -->
         <ng-container *ngIf="activeTab() === 'audit'">
             <!-- Status Sub-Tabs -->
-            <div class="flex flex-wrap gap-3 mb-10">
-                <button (click)="setAuditStatus('pending')"
-                    [class]="auditStatus() === 'pending' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-gray-600 hover:bg-gray-50'"
-                    class="px-5 py-2 rounded-full text-sm font-bold transition-all border border-transparent">
-                    Pending
-                </button>
-                <button (click)="setAuditStatus('approved')"
-                    [class]="auditStatus() === 'approved' ? 'bg-green-600 text-white shadow-lg shadow-green-200' : 'bg-white text-gray-600 hover:bg-gray-50'"
-                    class="px-5 py-2 rounded-full text-sm font-bold transition-all border border-transparent">
-                    Approved
-                </button>
-                <button (click)="setAuditStatus('verified')"
-                    [class]="auditStatus() === 'verified' ? 'bg-yellow-500 text-white shadow-lg shadow-yellow-200' : 'bg-white text-gray-600 hover:bg-gray-50'"
-                    class="px-5 py-2 rounded-full text-sm font-bold transition-all border border-transparent">
-                    Verified Authentic
-                </button>
-                <button (click)="setAuditStatus('rejected')"
-                    [class]="auditStatus() === 'rejected' ? 'bg-red-600 text-white shadow-lg shadow-red-200' : 'bg-white text-gray-600 hover:bg-gray-50'"
-                    class="px-5 py-2 rounded-full text-sm font-bold transition-all border border-transparent">
-                    Rejected
-                </button>
+            <div class="flex flex-wrap items-center justify-between gap-6 mb-10">
+                <div class="flex flex-wrap gap-3">
+                    <button (click)="setAuditStatus('pending')"
+                        [class]="auditStatus() === 'pending' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-gray-600 hover:bg-gray-50'"
+                        class="px-5 py-2 rounded-full text-sm font-bold transition-all border border-transparent">
+                        Pending
+                    </button>
+                    <button (click)="setAuditStatus('approved')"
+                        [class]="auditStatus() === 'approved' ? 'bg-green-600 text-white shadow-lg shadow-green-200' : 'bg-white text-gray-600 hover:bg-gray-50'"
+                        class="px-5 py-2 rounded-full text-sm font-bold transition-all border border-transparent">
+                        Approved
+                    </button>
+                    <button (click)="setAuditStatus('verified')"
+                        [class]="auditStatus() === 'verified' ? 'bg-yellow-500 text-white shadow-lg shadow-yellow-200' : 'bg-white text-gray-600 hover:bg-gray-50'"
+                        class="px-5 py-2 rounded-full text-sm font-bold transition-all border border-transparent">
+                        Verified Authentic
+                    </button>
+                    <button (click)="setAuditStatus('rejected')"
+                        [class]="auditStatus() === 'rejected' ? 'bg-red-600 text-white shadow-lg shadow-red-200' : 'bg-white text-gray-600 hover:bg-gray-50'"
+                        class="px-5 py-2 rounded-full text-sm font-bold transition-all border border-transparent">
+                        Rejected
+                    </button>
+                </div>
+
+                <!-- Search & Category Filter -->
+                <div class="flex flex-col md:flex-row gap-4 items-center w-full lg:w-auto">
+                    <!-- Search Bar -->
+                    <div class="relative w-full md:w-80 lg:w-96">
+                        <lucide-icon [name]="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5"></lucide-icon>
+                        <input type="text" 
+                               [ngModel]="searchQuery()"
+                               (ngModelChange)="searchQuery.set($event)"
+                               placeholder="Search across all tabs..." 
+                               class="w-full bg-white border border-gray-100 rounded-2xl py-3 pl-16 pr-4 font-medium text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 transition-all shadow-sm">
+                    </div>
+
+                    <!-- Category Filter Buttons -->
+                    <div class="flex bg-gray-100 p-1 rounded-2xl w-fit">
+                        <button (click)="categoryFilter.set('all')"
+                                [class.bg-white]="categoryFilter() === 'all'"
+                                [class.text-blue-800]="categoryFilter() === 'all'"
+                                [class.shadow-md]="categoryFilter() === 'all'"
+                                class="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all text-gray-500">
+                            All
+                        </button>
+                        <button (click)="categoryFilter.set('Local Eatery')"
+                                [class.bg-white]="categoryFilter() === 'Local Eatery'"
+                                [class.text-blue-800]="categoryFilter() === 'Local Eatery'"
+                                [class.shadow-md]="categoryFilter() === 'Local Eatery'"
+                                class="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all text-gray-500">
+                            Eateries
+                        </button>
+                        <button (click)="categoryFilter.set('Heritage Site')"
+                                [class.bg-white]="categoryFilter() === 'Heritage Site'"
+                                [class.text-blue-800]="categoryFilter() === 'Heritage Site'"
+                                [class.shadow-md]="categoryFilter() === 'Heritage Site'"
+                                class="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all text-gray-500">
+                            Heritage
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Loading/Error States -->
@@ -98,8 +138,8 @@
             </div>
 
             <!-- Vendor List -->
-            <div class="space-y-6" *ngIf="!loading() && vendors().length > 0; else emptyState">
-                <div *ngFor="let vendor of vendors()" class="bg-white rounded-3xl p-5 md:p-6 shadow-sm border border-gray-100/50 hover:shadow-xl hover:border-blue-100 transition-all group overflow-hidden">
+            <div class="space-y-6" *ngIf="!loading() && filteredVendors().length > 0; else emptyState">
+                <div *ngFor="let vendor of filteredVendors()" class="bg-white rounded-3xl p-5 md:p-6 shadow-sm border border-gray-100/50 hover:shadow-xl hover:border-blue-100 transition-all group overflow-hidden">
                     <div class="flex flex-col md:flex-row gap-6">
                         <!-- Thumbnail -->
                         <div class="w-full md:w-32 h-32 md:h-32 shrink-0 rounded-2xl overflow-hidden relative shadow-inner bg-gray-50">
@@ -217,8 +257,15 @@
                     <div class="w-24 h-24 bg-blue-50 rounded-3xl flex items-center justify-center mx-auto mb-8 animate-bounce transition-all">
                         <lucide-icon [name]="check" class="text-blue-600 w-10 h-10"></lucide-icon>
                     </div>
-                    <h4 class="text-2xl font-black text-gray-900 mb-2 font-serif">Queue Clear!</h4>
-                    <p class="text-gray-400 font-medium max-w-sm mx-auto">No {{ auditStatus() }} listings found in the database. Everything is up to date.</p>
+                    <h4 class="text-2xl font-black text-gray-900 mb-2 font-serif">
+                        {{ vendors().length > 0 ? 'No Matches Found' : 'Queue Clear!' }}
+                    </h4>
+                    <p class="text-gray-400 font-medium max-w-sm mx-auto">
+                        {{ vendors().length > 0 ? 'Try adjusting your search or category filters to find what you looking for.' : 'No ' + auditStatus() + ' listings found in the database. Everything is up to date.' }}
+                    </p>
+                    <button *ngIf="vendors().length > 0" (click)="searchQuery.set(''); categoryFilter.set('all')" class="mt-8 text-blue-600 font-bold uppercase tracking-widest text-xs hover:underline">
+                        Reset All Filters
+                    </button>
                 </div>
             </ng-template>
         </ng-container>
@@ -323,11 +370,11 @@
                 </div>
             </div>
 
-            <!-- Scrollable Body -->
+            <!-- Scrollable Body (Vertical Layout) -->
             <div class="flex-1 overflow-y-auto p-8 md:p-12 custom-scrollbar">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="flex flex-col gap-12">
                     <!-- Main Content -->
-                    <div class="md:col-span-2 space-y-10">
+                    <div class="space-y-10">
                         <section *ngIf="selectedVendor().category === 'Local Eatery' && selectedVendor().culturalStory">
                             <h5 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Cultural Story & Narrative</h5>
                             <p class="text-lg md:text-xl text-gray-700 font-medium leading-relaxed italic font-serif">
@@ -485,7 +532,7 @@
                 <!-- Basic Info -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="space-y-2">
-                        <label class="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Vendor Name</label>
+                        <label class="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Name</label>
                         <input type="text" formControlName="name" class="w-full bg-gray-50 border-2 border-transparent focus:border-blue-600 focus:bg-white rounded-2xl px-5 py-4 font-bold text-gray-900 outline-none transition-all">
                     </div>
                     

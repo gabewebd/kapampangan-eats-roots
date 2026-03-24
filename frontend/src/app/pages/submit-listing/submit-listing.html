@@ -49,7 +49,7 @@
           <!-- Upload Vendor Photos -->
           <div>
             <label class="flex items-center gap-2 text-angeles-blue font-bold text-[15px] md:text-[17px] mb-1.5">
-              <lucide-icon name="camera" class="w-5 h-5 stroke-[2.5px]"></lucide-icon> Vendor Photos
+              <lucide-icon name="camera" class="w-5 h-5 stroke-[2.5px]"></lucide-icon> Photos
             </label>
             <p class="text-[13px] md:text-sm text-gray-500 mb-3 font-medium">Add up to 4 photos of your place. ({{ selectedFiles.length }}/4)</p>
             
@@ -70,16 +70,16 @@
             </div>
           </div>
 
-          <!-- Business Name -->
+          <!-- Business / Site Name -->
           <div>
             <label class="flex items-center gap-2 text-angeles-blue font-bold text-[15px] md:text-[17px] mb-2">
-              <lucide-icon name="store" class="w-5 h-5 stroke-[2.5px]"></lucide-icon> Business Name
+              <lucide-icon [name]="isHeritageSite() ? 'landmark' : 'store'" class="w-5 h-5 stroke-[2.5px]"></lucide-icon> {{ isHeritageSite() ? 'Site Name' : 'Business Name' }}
             </label>
-            <input type="text" formControlName="name" placeholder="e.g., Aling Nena's Carinderia" 
+            <input type="text" formControlName="name" [placeholder]="isHeritageSite() ? 'e.g., San Guillermo Parish Church' : 'e.g., Aling Nena\'s Carinderia'" 
                    class="w-full bg-gray-50/50 border border-gray-200 rounded-2xl px-5 py-4 text-gray-800 focus:outline-none focus:ring-4 focus:ring-angeles-blue/10 focus:border-angeles-blue transition-all" />
             
             <p *ngIf="submitForm.get('name')?.invalid && submitForm.get('name')?.touched" class="text-sm text-red-500 font-medium mt-2 flex items-center gap-2">
-               <lucide-icon name="info" class="w-4 h-4"></lucide-icon> Business Name is required
+               <lucide-icon name="info" class="w-4 h-4"></lucide-icon> {{ isHeritageSite() ? 'Site Name' : 'Business Name' }} is required
             </p>
           </div>
 

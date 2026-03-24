@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, signal, ViewChild, ElementRef, AfterViewInit, OnDestroy, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
@@ -48,6 +48,7 @@ export class AdminDashboard implements OnInit, OnDestroy {
   readonly utensils = Utensils;
   readonly navigation = Navigation;
   readonly info = Info;
+  readonly search = Search;
 
   vendors = signal<any[]>([]);
   metrics = signal<any>(null);
@@ -58,6 +59,25 @@ export class AdminDashboard implements OnInit, OnDestroy {
   
   activeTab = signal<'audit' | 'analytics'>('audit');
   auditStatus = signal<'pending' | 'approved' | 'verified' | 'rejected'>('pending');
+  
+  // Search and Filter signals
+  searchQuery = signal('');
+  categoryFilter = signal<'all' | 'Local Eatery' | 'Heritage Site'>('all');
+
+  filteredVendors = computed(() => {
+    const query = this.searchQuery().toLowerCase().trim();
+    const cat = this.categoryFilter();
+    const list = this.vendors() || [];
+
+    return list.filter(v => {
+      const matchesCategory = cat === 'all' || v.category === cat;
+      const matchesSearch = !query || 
+        v.name?.toLowerCase().includes(query) || 
+        v.location?.address?.toLowerCase().includes(query);
+      
+      return matchesCategory && matchesSearch;
+    });
+  });
   
   selectedVendor = signal<any>(null);
   isDetailModalOpen = signal(false);
