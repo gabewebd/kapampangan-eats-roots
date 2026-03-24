@@ -100,20 +100,14 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.initMap();
-    // Initial invalidation loop to solve "gray box" issues
-    let attempts = 0;
-    const invalidateInterval = setInterval(() => {
+    // Multiple attempts to fix tile rendering issues
+    [100, 500, 1000, 2000].forEach(delay => {
+      setTimeout(() => {
         if (this.map) {
-            this.map.invalidateSize();
-            const size = this.map.getSize();
-            if (size.x > 0 && size.y > 0) {
-                console.log('Audit: Map rendered successfully in SubmitListing after', attempts, 'attempts');
-                clearInterval(invalidateInterval);
-            }
+          this.map.invalidateSize();
         }
-        attempts++;
-        if (attempts > 20) clearInterval(invalidateInterval);
-    }, 200);
+      }, delay);
+    });
   }
 
   ngOnDestroy() {
@@ -145,10 +139,6 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
       shadowSize: [41, 41]
     });
     L.Marker.prototype.options.icon = defaultIcon;
-    // Set global default for any other markers
-    L.Icon.Default.prototype.options.iconUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';
-    L.Icon.Default.prototype.options.iconRetinaUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png';
-    L.Icon.Default.prototype.options.shadowUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png';
 
     this.marker = L.marker(this.defaultCoords, { draggable: true }).addTo(this.map);
 
@@ -164,10 +154,9 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
 
   private updateMarker(lat: number, lng: number) {
     if (!this.marker || !this.map) return;
-    console.log(`Audit: Updating marker to [${lat}, ${lng}]`);
     this.marker.setLatLng([lat, lng]);
     this.map.setView([lat, lng], 16);
-    this.map.invalidateSize(); 
+    this.map.invalidateSize(); // Ensure tiles are correct after view change
     this.submitForm.patchValue({ latitude: lat, longitude: lng });
   }
 
@@ -192,7 +181,6 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
   private onMarkerDragEnd() {
     if (!this.marker) return;
     const { lat, lng } = this.marker.getLatLng();
-    console.log(`Audit: Marker drag ended at [${lat}, ${lng}]`);
     this.submitForm.patchValue({ latitude: lat, longitude: lng });
     this.performReverseGeocoding(lat, lng);
   }

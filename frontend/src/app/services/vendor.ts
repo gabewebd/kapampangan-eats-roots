@@ -91,13 +91,16 @@ export class VendorService {
     );
   }
 
-
   getRelatedVendors(id: string): Observable<Vendor[]> {
     return this.http.get<Vendor[]>(`${this.apiUrl}/${id}/related`).pipe(
       catchError(handleHttpError(`Related Vendors ${id}`))
     );
   }
+<<<<<<< HEAD
+  
+=======
 
+>>>>>>> 3411dac (Feat: Implement Leaflet interactive maps, GeoJSON migration, and TypeScript fixes for submission form and explore map)
   search(query: string): Observable<Vendor[]> {
     return this.http.get<Vendor[]>(`${this.apiUrl}/search?q=${query}`).pipe(
       catchError(handleHttpError('Search'))

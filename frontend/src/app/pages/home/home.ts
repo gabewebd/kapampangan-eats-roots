@@ -74,7 +74,7 @@ export class Home implements OnInit {
         : this.vendorService.getTrending();
 
     obs$.subscribe({
-      next: (data: Vendor[]) => {
+      next: (data) => {
         this.trendingSpots = data;
         this.loading.set(false);
       },
@@ -94,11 +94,19 @@ export class Home implements OnInit {
     this.loading.set(true);
     this.isSearching = true;
     this.vendorService.search(this.searchQuery).subscribe({
+<<<<<<< HEAD
+      next: (data) => {
+        this.trendingSpots = data;
+        this.loading.set(false);
+      },
+      error: (err) => {
+=======
       next: (data: Vendor[]) => {
         this.trendingSpots = data;
         this.loading.set(false);
       },
       error: (err: any) => {
+>>>>>>> 3411dac (Feat: Implement Leaflet interactive maps, GeoJSON migration, and TypeScript fixes for submission form and explore map)
         console.error('Search failure', err);
         this.loading.set(false);
       }
