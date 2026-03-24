@@ -7,7 +7,7 @@ import { LucideAngularModule } from 'lucide-angular';
   standalone: true,
   imports: [CommonModule, LucideAngularModule],
   template: `
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group hover:shadow-md transition-shadow">
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group hover:shadow-md transition-shadow relative z-[9999] pointer-events-auto">
       <div class="flex items-center gap-6 flex-1">
         <img [src]="vendor.images && vendor.images.length > 0 ? vendor.images[0] : 'https://placehold.co/100x100?text=No+Image'" 
              class="w-20 h-20 rounded-xl object-cover shadow-sm bg-gray-50 group-hover:scale-105 transition-transform" 

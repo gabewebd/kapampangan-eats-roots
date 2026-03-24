@@ -25,15 +25,32 @@
         <!-- Header Section -->
         <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-                <h2 class="text-3xl font-bold text-gray-900 tracking-tight mb-1">Audit Review</h2>
-                <p class="text-gray-500 font-medium">Verify submissions for the live community feed — as of {{ today |
+                <h2 class="text-3xl font-bold text-gray-900 tracking-tight mb-1">Admin Control Center</h2>
+                <p class="text-gray-500 font-medium">Verify submissions and monitor metrics — as of {{ today |
                     date:'longDate' }}</p>
             </div>
+            
+            <!-- Tabs -->
+            <div class="flex bg-gray-100 p-1 rounded-xl">
+                <button (click)="activeTab.set('audit')" 
+                        [class.bg-white]="activeTab() === 'audit'"
+                        [class.shadow-sm]="activeTab() === 'audit'"
+                        class="px-6 py-2 rounded-lg text-sm font-bold transition-all text-gray-700">
+                    Audit Review
+                </button>
+                <button (click)="activeTab.set('analytics')" 
+                        [class.bg-white]="activeTab() === 'analytics'"
+                        [class.shadow-sm]="activeTab() === 'analytics'"
+                        class="px-6 py-2 rounded-lg text-sm font-bold transition-all text-gray-700">
+                    Analytics Dashboard
+                </button>
+            </div>
+        </div>
             <div *ngIf="loading()" class="flex items-center gap-2 text-blue-600 text-sm font-bold">
                 <lucide-icon [name]="loader" class="w-4 h-4 animate-spin"></lucide-icon>
                 Scanning database...
             </div>
-        </div>
+
 
         <!-- Error State -->
         <div *ngIf="error()"
@@ -54,7 +71,7 @@
         </div>
 
         <!-- Pending Approvals Section -->
-        <section class="mb-16">
+        <section *ngIf="activeTab() === 'audit'" class="mb-16 animate-in">
             <div class="flex items-center justify-between mb-8">
                 <div>
                     <h3 class="text-2xl font-bold text-gray-900 tracking-tight">Pending Listings</h3>
@@ -78,10 +95,10 @@
                             <lucide-icon name="eye" class="w-4 h-4"></lucide-icon>
                             {{ selectedVendor()?._id === vendor._id ? 'Hide Details' : 'View Full Submission' }}
                         </button>
-                        <button (click)="onAuthenticate(vendor._id)"
+                        <button *ngIf="evaluatingVendorId() !== vendor._id" (click)="startEvaluation(vendor._id)"
                             class="text-sm font-bold text-yellow-700 hover:text-yellow-800 flex items-center gap-1.5 ml-4">
                             <lucide-icon name="badge-check" class="w-4 h-4"></lucide-icon>
-                            Verify as Authentic
+                            Evaluate ASF & Verify
                         </button>
                     </div>
                     
@@ -145,6 +162,41 @@
                             <lucide-icon name="x" class="w-4 h-4"></lucide-icon> Close
                         </button>
                     </div>
+
+                    <!-- ASF Evaluation View -->
+                    <div *ngIf="evaluatingVendorId() === vendor._id" 
+                         class="mt-4 p-6 bg-gradient-to-br from-yellow-50 to-white rounded-2xl border border-yellow-200 shadow-sm animate-in ml-[104px]">
+                         <h4 class="font-bold text-gray-900 mb-4 text-lg">Authenticity Scoring Framework (ASF)</h4>
+                         <p class="text-sm text-gray-600 mb-6 font-medium">Score the vendor based on the 5 core criteria (1-10). A high score grants the Verified Authentic badge.</p>
+
+                         <div class="space-y-5 max-w-lg">
+                             <div>
+                                 <label class="flex justify-between text-sm font-bold text-gray-700 mb-2">Historical Continuity <span>{{ asfScores.historicalContinuity }}/10</span></label>
+                                 <input type="range" [(ngModel)]="asfScores.historicalContinuity" min="1" max="10" class="w-full accent-yellow-600">
+                             </div>
+                             <div>
+                                 <label class="flex justify-between text-sm font-bold text-gray-700 mb-2">Cultural Authenticity <span>{{ asfScores.culturalAuthenticity }}/10</span></label>
+                                 <input type="range" [(ngModel)]="asfScores.culturalAuthenticity" min="1" max="10" class="w-full accent-yellow-600">
+                             </div>
+                             <div>
+                                 <label class="flex justify-between text-sm font-bold text-gray-700 mb-2">Community Relevance <span>{{ asfScores.communityRelevance }}/10</span></label>
+                                 <input type="range" [(ngModel)]="asfScores.communityRelevance" min="1" max="10" class="w-full accent-yellow-600">
+                             </div>
+                             <div>
+                                 <label class="flex justify-between text-sm font-bold text-gray-700 mb-2">Heritage Documentation <span>{{ asfScores.heritageDocumentation }}/10</span></label>
+                                 <input type="range" [(ngModel)]="asfScores.heritageDocumentation" min="1" max="10" class="w-full accent-yellow-600">
+                             </div>
+                             <div>
+                                 <label class="flex justify-between text-sm font-bold text-gray-700 mb-2">Digital Narrative Quality <span>{{ asfScores.digitalNarrativeQuality }}/10</span></label>
+                                 <input type="range" [(ngModel)]="asfScores.digitalNarrativeQuality" min="1" max="10" class="w-full accent-yellow-600">
+                             </div>
+                         </div>
+                         
+                         <div class="mt-8 flex gap-3">
+                             <button (click)="onAuthenticate(vendor._id)" class="px-5 py-2.5 bg-yellow-400 text-yellow-900 font-bold rounded-xl shadow-sm hover:shadow-md transition-all">Submit Verification</button>
+                             <button (click)="cancelEvaluation()" class="px-5 py-2.5 bg-white text-gray-500 font-bold rounded-xl border border-gray-200 hover:bg-gray-50 transition-all">Cancel</button>
+                         </div>
+                    </div>
                 </div>
             </div>
             <ng-template #noPending>
@@ -157,6 +209,50 @@
                     <p class="text-gray-400 text-sm">All submissions have been successfully verified or rejected.</p>
                 </div>
             </ng-template>
+        </section>
+
+        <!-- Analytics Dashboard Section -->
+        <section *ngIf="activeTab() === 'analytics'" class="animate-in space-y-8">
+            <div *ngIf="metrics">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Total Vendors</p>
+                        <h4 class="text-3xl font-black text-angeles-blue mb-1">{{ metrics.totalVendors.count }}</h4>
+                        <p class="text-xs font-bold text-green-600">{{ metrics.totalVendors.growth }}</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Verified</p>
+                        <h4 class="text-3xl font-black text-angeles-blue mb-1">{{ metrics.verifiedListings.count }}</h4>
+                        <p class="text-xs font-bold text-blue-600">{{ metrics.verifiedListings.verificationRate }}</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Most Visited</p>
+                        <h4 class="text-xl font-bold text-gray-900 mb-1 truncate">{{ metrics.mostVisitedSpot.name }}</h4>
+                        <p class="text-xs font-bold text-angeles-red">{{ metrics.mostVisitedSpot.views }}</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Trending Dish</p>
+                        <h4 class="text-xl font-bold text-gray-900 mb-1 truncate">{{ metrics.trendingDish.name }}</h4>
+                        <p class="text-xs font-bold text-yellow-600">{{ metrics.trendingDish.searches }}</p>
+                    </div>
+                </div>
+                
+                <h3 class="text-2xl font-bold text-gray-900 tracking-tight mb-6">Cultural Impact</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-angeles-yellow/10 p-8 rounded-3xl border border-angeles-yellow/20">
+                        <h4 class="text-4xl font-black text-yellow-800 mb-2">{{ metrics.culturalImpact.heritageEateriesListed.percentage }}</h4>
+                        <p class="text-yellow-900 font-medium">{{ metrics.culturalImpact.heritageEateriesListed.description }}</p>
+                    </div>
+                    <div class="bg-angeles-blue/10 p-8 rounded-3xl border border-angeles-blue/20">
+                        <h4 class="text-4xl font-black text-blue-800 mb-2">{{ metrics.culturalImpact.kapampanganDishesFeatured.count }}</h4>
+                        <p class="text-blue-900 font-medium">{{ metrics.culturalImpact.kapampanganDishesFeatured.description }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div *ngIf="!metrics && !loading()" class="bg-gray-50 p-12 rounded-3xl text-center border border-gray-100">
+                <p class="text-gray-500 font-medium">No analytics data available yet.</p>
+            </div>
         </section>
     </main>
 </div>

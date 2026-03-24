@@ -5,6 +5,7 @@ import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth';
 import { LucideAngularModule, Loader, Check, LogOut, Activity, X, BadgeCheck, Eye } from 'lucide-angular';
 import { ApprovalItem } from '../../components/admin/approval-item/approval-item';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -12,7 +13,8 @@ import { ApprovalItem } from '../../components/admin/approval-item/approval-item
   imports: [
     CommonModule,
     LucideAngularModule,
-    ApprovalItem
+    ApprovalItem,
+    FormsModule
   ],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
@@ -28,9 +30,19 @@ export class AdminDashboard implements OnInit {
   readonly activity = Activity;
 
   pendingVendors: any[] = [];
+  metrics: any = null;
   loading = signal(true);
   error = signal('');
   selectedVendor = signal<any>(null);
+  evaluatingVendorId = signal<string | null>(null);
+  asfScores = {
+    historicalContinuity: 5,
+    culturalAuthenticity: 5,
+    communityRelevance: 5,
+    heritageDocumentation: 5,
+    digitalNarrativeQuality: 5
+  };
+  activeTab = signal<'audit' | 'analytics'>('audit');
   today = new Date();
 
   ngOnInit() {
@@ -41,21 +53,32 @@ export class AdminDashboard implements OnInit {
   refreshData() {
     this.loading.set(true);
     this.error.set('');
+    
+    // Fetch pending vendors
     this.adminService.getPendingVendors().subscribe({
       next: (data) => {
-        console.log('Audit: Pending vendors fetched', data);
         this.pendingVendors = data;
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Audit: Dashboard fetch error', err);
         this.error.set('Failed to load pending submissions.');
         this.loading.set(false);
+      }
+    });
+
+    // Fetch metrics
+    this.adminService.getDashboardMetrics().subscribe({
+      next: (data) => {
+        this.metrics = data;
+      },
+      error: (err) => {
+        console.error('Audit: Failed to load metrics', err);
       }
     });
   }
 
   onApprove(id: string) {
+    alert('Processing approval...');
     console.log(`Audit: Approving vendor ${id}`);
     this.adminService.approveVendor(id).subscribe({
       next: (res) => {
@@ -72,6 +95,7 @@ export class AdminDashboard implements OnInit {
 
   onReject(id: string) {
     if (confirm('Audit: Confirm rejection and permanent deletion?')) {
+      alert('Processing rejection...');
       console.log(`Audit: Rejecting vendor ${id}`);
       this.adminService.rejectVendor(id).subscribe({
         next: (res) => {
@@ -87,12 +111,28 @@ export class AdminDashboard implements OnInit {
     }
   }
 
+  startEvaluation(id: string) {
+    this.evaluatingVendorId.set(id);
+    this.asfScores = {
+      historicalContinuity: 5,
+      culturalAuthenticity: 5,
+      communityRelevance: 5,
+      heritageDocumentation: 5,
+      digitalNarrativeQuality: 5
+    };
+  }
+
+  cancelEvaluation() {
+    this.evaluatingVendorId.set(null);
+  }
+
   onAuthenticate(id: string) {
     console.log(`Audit: Authenticating vendor ${id}`);
-    this.adminService.authenticateVendor(id).subscribe({
+    this.adminService.authenticateVendor(id, this.asfScores).subscribe({
       next: (res) => {
         console.log('Audit: Authentication Success', res);
         alert('Vendor marked as Verified Authentic!');
+        this.evaluatingVendorId.set(null);
       },
       error: (err) => {
         console.error('Audit: Authentication Error', err);

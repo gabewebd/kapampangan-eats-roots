@@ -32,6 +32,18 @@ export class AuthService {
     );
   }
 
+  userRegister(userData: { name: string, email: string, password: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/user-register`, userData).pipe(
+      tap((res: any) => {
+        if (res.token) {
+          localStorage.setItem('user_token', res.token);
+          localStorage.setItem('user_data', JSON.stringify(res.user));
+        }
+      }),
+      catchError(this.handleError('User Register'))
+    );
+  }
+
   private handleError(context: string) {
     return (error: HttpErrorResponse) => {
       if (error.status === 0) {

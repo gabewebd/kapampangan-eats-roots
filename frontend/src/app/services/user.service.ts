@@ -8,10 +8,10 @@ export interface UserProfile {
   name: string;
   email: string;
   memberSince: string;
-  savedPlaces: any[];
   favorites: any[];
   visited: any[];
   submissions: any[];
+  savedPlaces: any[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -30,6 +30,33 @@ export class UserService {
           console.error(`Audit [Profile]: HTTP ${error.status}`, error);
         }
         return of(null);
+      })
+    );
+  }
+
+  toggleSavedPlace(userId: string, vendorId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/toggle-saved`, { userId, vendorId }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Audit [User]: Toggle saved failed', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  toggleFavorite(userId: string, vendorId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/toggle-favorite`, { userId, vendorId }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Audit [User]: Toggle favorite failed', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  toggleVisited(userId: string, vendorId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/toggle-visited`, { userId, vendorId }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Audit [User]: Toggle visited failed', error);
+        return throwError(() => error);
       })
     );
   }

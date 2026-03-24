@@ -17,6 +17,8 @@ export class UserLogin {
   private router = inject(Router);
 
   credentials = { email: '', password: '' };
+  registerData = { name: '', email: '', password: '' };
+  isRegisterMode = false;
   isLoading = false;
   error = '';
 
@@ -27,11 +29,20 @@ export class UserLogin {
   logIn = LogIn;
   arrowRight = ArrowRight;
 
+  toggleMode() {
+    this.isRegisterMode = !this.isRegisterMode;
+    this.error = '';
+  }
+
   onSubmit() {
     this.isLoading = true;
     this.error = '';
 
-    this.authService.userLogin(this.credentials).subscribe({
+    const obs = this.isRegisterMode 
+      ? this.authService.userRegister(this.registerData)
+      : this.authService.userLogin(this.credentials);
+
+    obs.subscribe({
       next: (res) => {
         this.isLoading = false;
         // Redirect on success
@@ -39,11 +50,11 @@ export class UserLogin {
       },
       error: (err) => {
         this.isLoading = false;
-        console.error('User Login Error:', err);
+        console.error(`${this.isRegisterMode ? 'Register' : 'Login'} Error:`, err);
         if (err.status === 401 || err.status === 400 || err.status === 404) {
-          this.error = 'Invalid email or password. Please try again.';
+          this.error = err.error?.message || 'Invalid credentials or information. Please try again.';
         } else {
-          this.error = 'An error occurred during login. Please try again later.';
+          this.error = `An error occurred during ${this.isRegisterMode ? 'registration' : 'login'}. Please try again later.`;
         }
       }
     });

@@ -130,9 +130,40 @@ exports.getVendorById = async (req, res) => {
 
         const vendor = await Vendor.findById(id);
         if (!vendor) return res.status(404).json({ success: false, message: 'Vendor not found' });
+        
+        // Non-blocking view increment
+        Vendor.findByIdAndUpdate(id, { $inc: { views: 1 } }, { returnDocument: 'after' }).exec().catch(() => {});
+        
         return res.status(200).json(vendor);
     } catch (err) {
         console.error('Audit: getVendorById failed:', err);
+        return res.status(500).json({ success: false, error: 'Database query failed' });
+    }
+};
+
+// GET: Related Vendors (Contextual Heritage Linking)
+exports.getRelatedVendors = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: 'Invalid Vendor ID format' });
+        }
+
+        const currentVendor = await Vendor.findById(id);
+        if (!currentVendor) return res.status(404).json({ success: false, message: 'Vendor not found' });
+
+        const oppositeCategory = currentVendor.category === 'Heritage Site' ? 'Local Eatery' : 'Heritage Site';
+
+        // Simulating "Nearby" by fetching random verified vendors of the opposite category.
+        // Once geolocation is added, this can be updated to use $near queries.
+        const related = await Vendor.aggregate([
+            { $match: { isVerified: true, category: oppositeCategory, _id: { $ne: currentVendor._id } } },
+            { $sample: { size: 3 } }
+        ]);
+
+        return res.status(200).json(related);
+    } catch (err) {
+        console.error('Audit: getRelatedVendors failed:', err);
         return res.status(500).json({ success: false, error: 'Database query failed' });
     }
 };
@@ -213,21 +244,39 @@ exports.rejectVendor = async (req, res) => {
     }
 };
 
-// PATCH: Mark vendor as Authentic (yellow badge)
+// PATCH: Mark vendor as Authentic (yellow badge) with ASF Scores
 exports.authenticateVendor = async (req, res) => {
     try {
         const { id } = req.params;
+        const { asfScores } = req.body;
+        
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ success: false, message: 'Invalid Vendor ID format' });
         }
 
+        let updateData = { isAuthentic: true };
+        
+        if (asfScores) {
+            const totalScore = 
+                (Number(asfScores.historicalContinuity) || 0) +
+                (Number(asfScores.culturalAuthenticity) || 0) +
+                (Number(asfScores.communityRelevance) || 0) +
+                (Number(asfScores.heritageDocumentation) || 0) +
+                (Number(asfScores.digitalNarrativeQuality) || 0);
+                
+            updateData.asfScores = {
+                ...asfScores,
+                totalScore
+            };
+        }
+
         const vendor = await Vendor.findByIdAndUpdate(
             id,
-            { isAuthentic: true },
+            updateData,
             { new: true }
         );
         if (!vendor) return res.status(404).json({ success: false, message: 'Vendor not found' });
-        return res.status(200).json({ success: true, message: 'Vendor marked as Verified Authentic.', vendor });
+        return res.status(200).json({ success: true, message: 'Vendor marked as Verified Authentic with ASF Scores.', vendor });
     } catch (err) {
         console.error('Audit: authenticateVendor failed:', err);
         return res.status(500).json({ success: false, error: 'Authentication update failed' });

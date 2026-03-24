@@ -72,35 +72,57 @@
           </div>
           <div class="w-px h-10 md:h-12 bg-gray-200"></div>
           <div class="text-center flex-1 group">
-            <div class="text-2xl md:text-4xl font-black text-angeles-blue mb-1 group-hover:scale-110 transition-transform origin-bottom">{{ profile().reviews }}</div>
-            <div class="text-[12px] md:text-[14px] text-gray-500 font-bold uppercase tracking-wider">Reviews</div>
+            <div class="text-2xl md:text-4xl font-black text-angeles-blue mb-1 group-hover:scale-110 transition-transform origin-bottom">{{ profile().favorites }}</div>
+            <div class="text-[12px] md:text-[14px] text-gray-500 font-bold uppercase tracking-wider">Favorites</div>
           </div>
         </div>
 
         <!-- Action Links Grid -->
         <div class="md:grid md:grid-cols-2 md:gap-4 space-y-4 md:space-y-0">
           
-          <button class="w-full bg-white md:bg-gray-50/50 rounded-[24px] shadow-sm hover:shadow-md p-5 md:p-6 flex items-center justify-between border border-gray-100 hover:border-gray-200 md:hover:bg-white group transition-all duration-300">
+          <button (click)="setActiveTab('favorites')" 
+                  [class.ring-2]="activeTab() === 'favorites'"
+                  [class.ring-angeles-red]="activeTab() === 'favorites'"
+                  class="w-full bg-white md:bg-gray-50/50 rounded-[24px] shadow-sm hover:shadow-md p-5 md:p-6 flex items-center justify-between border border-gray-100 hover:border-gray-200 md:hover:bg-white group transition-all duration-300">
             <div class="flex items-center gap-4">
               <div class="bg-red-50 p-3 rounded-2xl group-hover:scale-110 group-hover:bg-red-100 transition-all">
                 <lucide-icon [name]="heart" class="w-5 h-5 text-angeles-red"></lucide-icon>
               </div>
               <span class="font-bold text-[16px] md:text-[17px] text-gray-800 group-hover:text-angeles-blue transition-colors">Favorites</span>
             </div>
-            <lucide-icon [name]="chevronRight" class="w-5 h-5 text-gray-400 group-hover:text-angeles-blue transition-colors group-hover:translate-x-1 transform"></lucide-icon>
+            <lucide-icon [name]="chevronRight" class="w-5 h-5 text-gray-400 group-hover:text-angeles-blue transition-colors group-hover:translate-x-1 transform" [class.rotate-90]="activeTab() === 'favorites'"></lucide-icon>
           </button>
 
-          <button class="w-full bg-white md:bg-gray-50/50 rounded-[24px] shadow-sm hover:shadow-md p-5 md:p-6 flex items-center justify-between border border-gray-100 hover:border-gray-200 md:hover:bg-white group transition-all duration-300">
+          <button (click)="setActiveTab('saved')"
+                  [class.ring-2]="activeTab() === 'saved'"
+                  [class.ring-angeles-blue]="activeTab() === 'saved'"
+                  class="w-full bg-white md:bg-gray-50/50 rounded-[24px] shadow-sm hover:shadow-md p-5 md:p-6 flex items-center justify-between border border-gray-100 hover:border-gray-200 md:hover:bg-white group transition-all duration-300">
             <div class="flex items-center gap-4">
               <div class="bg-blue-50 p-3 rounded-2xl group-hover:scale-110 group-hover:bg-blue-100 transition-all">
                 <lucide-icon [name]="bookmark" class="w-5 h-5 text-angeles-blue"></lucide-icon>
               </div>
               <span class="font-bold text-[16px] md:text-[17px] text-gray-800 group-hover:text-angeles-blue transition-colors">Saved Places</span>
             </div>
-            <lucide-icon [name]="chevronRight" class="w-5 h-5 text-gray-400 group-hover:text-angeles-blue transition-colors group-hover:translate-x-1 transform"></lucide-icon>
+            <lucide-icon [name]="chevronRight" class="w-5 h-5 text-gray-400 group-hover:text-angeles-blue transition-colors group-hover:translate-x-1 transform" [class.rotate-90]="activeTab() === 'saved'"></lucide-icon>
           </button>
 
-          <button class="w-full bg-white md:bg-gray-50/50 rounded-[24px] shadow-sm hover:shadow-md p-5 md:p-6 flex items-center justify-between border border-gray-100 hover:border-gray-200 md:hover:bg-white group transition-all duration-300 md:col-span-2">
+          <button (click)="setActiveTab('visited')"
+                  [class.ring-2]="activeTab() === 'visited'"
+                  [class.ring-green-600]="activeTab() === 'visited'"
+                  class="w-full bg-white md:bg-gray-50/50 rounded-[24px] shadow-sm hover:shadow-md p-5 md:p-6 flex items-center justify-between border border-gray-100 hover:border-gray-200 md:hover:bg-white group transition-all duration-300">
+            <div class="flex items-center gap-4">
+              <div class="bg-green-50 p-3 rounded-2xl group-hover:scale-110 group-hover:bg-green-100 transition-all">
+                <lucide-icon name="check" class="w-5 h-5 text-green-600"></lucide-icon>
+              </div>
+              <span class="font-bold text-[16px] md:text-[17px] text-gray-800 group-hover:text-angeles-blue transition-colors">Visited Places</span>
+            </div>
+            <lucide-icon [name]="chevronRight" class="w-5 h-5 text-gray-400 group-hover:text-angeles-blue transition-colors group-hover:translate-x-1 transform" [class.rotate-90]="activeTab() === 'visited'"></lucide-icon>
+          </button>
+
+          <button (click)="setActiveTab('submissions')"
+                  [class.ring-2]="activeTab() === 'submissions'"
+                  [class.ring-angeles-yellow]="activeTab() === 'submissions'"
+                  class="w-full bg-white md:bg-gray-50/50 rounded-[24px] shadow-sm hover:shadow-md p-5 md:p-6 flex items-center justify-between border border-gray-100 hover:border-gray-200 md:hover:bg-white group transition-all duration-300">
             <div class="flex items-center gap-4">
               <div class="bg-yellow-50 p-3 rounded-2xl group-hover:scale-110 group-hover:bg-yellow-100 transition-all">
                 <lucide-icon [name]="mapPin" class="w-5 h-5 text-angeles-yellow"></lucide-icon>
@@ -109,17 +131,54 @@
             </div>
             <div class="flex items-center gap-3">
               <span *ngIf="profile().pendingSubmissions > 0" class="bg-gray-100 text-gray-500 font-bold text-xs px-2.5 py-1 rounded-full hidden md:block group-hover:bg-blue-50 group-hover:text-angeles-blue transition-colors">{{ profile().pendingSubmissions }} Pending</span>
-              <lucide-icon [name]="chevronRight" class="w-5 h-5 text-gray-400 group-hover:text-angeles-blue transition-colors group-hover:translate-x-1 transform"></lucide-icon>
+              <lucide-icon [name]="chevronRight" class="w-5 h-5 text-gray-400 group-hover:text-angeles-blue transition-colors group-hover:translate-x-1 transform" [class.rotate-90]="activeTab() === 'submissions'"></lucide-icon>
             </div>
           </button>
-
         </div>
 
-        <!-- Sign Out -->
+        <!-- Dynamic List Display -->
+        <div *ngIf="activeTab() !== 'none'" class="mt-8 pt-8 border-t border-gray-100 animate-in slide-in-from-top-4 duration-500 overflow-hidden">
+           <div class="flex items-center justify-between mb-6">
+              <h3 class="font-serif text-2xl font-bold text-gray-900 capitalize">{{ activeTab() === 'saved' ? 'Saved Places' : activeTab() === 'visited' ? 'Visited Places' : activeTab() }}</h3>
+              <button (click)="activeTab.set('none')" class="text-xs font-bold text-gray-400 hover:text-gray-600 transition-colors uppercase tracking-widest">Close List</button>
+           </div>
+
+           <!-- Content Lists -->
+           <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar pb-6">
+              
+              <!-- Empty States -->
+              <div *ngIf="activeTab() === 'favorites' && favorites().length === 0" class="py-12 text-center text-gray-400 italic">No favorites yet. Start exploring heritage sites!</div>
+              <div *ngIf="activeTab() === 'saved' && savedPlaces().length === 0" class="py-12 text-center text-gray-400 italic">Your saved list is empty. Found a place you love? Save it!</div>
+              <div *ngIf="activeTab() === 'visited' && visitedPlaces().length === 0" class="py-12 text-center text-gray-400 italic">You haven't marked any places as visited yet. Time for an adventure!</div>
+              <div *ngIf="activeTab() === 'submissions' && submissions().length === 0" class="py-12 text-center text-gray-400 italic">You haven't submitted any places yet. Help us grow the community!</div>
+
+              <!-- List Items -->
+              <ng-container *ngFor="let item of (activeTab() === 'favorites' ? favorites() : activeTab() === 'saved' ? savedPlaces() : activeTab() === 'visited' ? visitedPlaces() : submissions())">
+                <a [routerLink]="['/vendor-detail', item._id]" class="flex items-center gap-4 p-4 bg-gray-50/50 rounded-[24px] hover:bg-white hover:shadow-xl border border-transparent hover:border-gray-100 transition-all group">
+                  <div class="w-16 h-16 rounded-[18px] overflow-hidden shrink-0 shadow-sm border border-white">
+                    <img [src]="item.images?.[0] || 'assets/placeholder-food.jpg'" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" [alt]="item.name">
+                  </div>
+                  <div class="flex-1">
+                    <h4 class="font-bold text-gray-900 group-hover:text-angeles-blue transition-colors text-[16px]">{{ item.name }}</h4>
+                    <p class="text-[12px] text-gray-500 font-medium">{{ item.category }} • {{ item.location?.address }}</p>
+                  </div>
+                  <lucide-icon [name]="chevronRight" class="w-4 h-4 text-gray-300 group-hover:text-angeles-blue transition-colors group-hover:translate-x-1 transform"></lucide-icon>
+                </a>
+              </ng-container>
+
+           </div>
+        </div>
+
+        <!-- Session Actions -->
         <div class="pt-6 md:pt-4 flex justify-center md:justify-end pb-4 border-t border-gray-100/0 md:border-gray-100 mt-8 md:mt-12">
-          <button (click)="signOut()" class="flex items-center gap-2 text-gray-400 hover:text-red-500 font-bold text-[15px] md:text-base transition-colors group px-4 py-2 rounded-full hover:bg-red-50">
+          <button *ngIf="isLoggedIn()" (click)="signOut()" class="flex items-center gap-2 text-gray-400 hover:text-red-500 font-bold text-[15px] md:text-base transition-colors group px-4 py-2 rounded-full hover:bg-red-50">
             <lucide-icon [name]="logOut" class="w-5 h-5 group-hover:-translate-x-1 transition-transform"></lucide-icon>
             Sign Out
+          </button>
+          
+          <button *ngIf="!isLoggedIn()" (click)="goToLogin()" class="flex items-center gap-2 text-angeles-blue hover:text-blue-700 font-bold text-[15px] md:text-base transition-colors group px-6 py-2.5 rounded-full bg-blue-50 hover:bg-blue-100 shadow-sm">
+            <lucide-icon name="log-in" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></lucide-icon>
+            Sign In to Your Account
           </button>
         </div>
 

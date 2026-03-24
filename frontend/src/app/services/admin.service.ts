@@ -58,9 +58,10 @@ export class AdminService {
         );
     }
 
-    authenticateVendor(id: string): Observable<any> {
+    authenticateVendor(id: string, asfScores?: any): Observable<any> {
         const vendorUrl = `${environment.apiUrl}/vendors`;
-        return this.http.patch(`${vendorUrl}/${id}/authenticate`, {}, { headers: this.getHeaders() }).pipe(
+        const body = asfScores ? { asfScores } : {};
+        return this.http.patch(`${vendorUrl}/${id}/authenticate`, body, { headers: this.getHeaders() }).pipe(
             catchError(handleHttpError('Authenticate'))
         );
     }

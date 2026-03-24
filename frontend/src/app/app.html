@@ -7,9 +7,19 @@
       <a routerLink="/" routerLinkActive="text-angeles-yellow font-bold !opacity-100" [routerLinkActiveOptions]="{exact: true}" class="drop-shadow-sm opacity-90 hover:text-angeles-yellow hover:opacity-100 transition-colors">Home</a>
       <a routerLink="/explore" routerLinkActive="text-angeles-yellow font-bold !opacity-100" class="drop-shadow-sm opacity-90 hover:text-angeles-yellow hover:opacity-100 transition-colors">Explore Map</a>
       <a routerLink="/submit" routerLinkActive="text-angeles-yellow font-bold !opacity-100" class="drop-shadow-sm opacity-90 hover:text-angeles-yellow hover:opacity-100 transition-colors">Submit</a>
-      <a routerLink="/profile" routerLinkActive="bg-white/20" class="bg-white/15 hover:bg-white/25 border border-white/20 backdrop-blur-md px-6 py-2 rounded-full transition-all group flex items-center gap-2 shadow-sm font-bold">
-        Profile
-      </a>
+      
+      <ng-container *ngIf="isUserLoggedIn; else loginBtn">
+        <a routerLink="/profile" routerLinkActive="bg-white/20" class="bg-white/15 hover:bg-white/25 border border-white/20 backdrop-blur-md px-6 py-2 rounded-full transition-all group flex items-center gap-2 shadow-sm font-bold active:scale-95">
+          <lucide-icon [name]="userIcon" class="w-4 h-4"></lucide-icon>
+          Profile
+        </a>
+      </ng-container>
+      <ng-template #loginBtn>
+        <a routerLink="/login" routerLinkActive="bg-white/20" class="bg-white/15 hover:bg-white/25 border border-white/20 backdrop-blur-md px-6 py-2 rounded-full transition-all group flex items-center gap-2 shadow-sm font-bold active:scale-95">
+          <lucide-icon [name]="logInIcon" class="w-4 h-4"></lucide-icon>
+          Login
+        </a>
+      </ng-template>
     </div>
   </nav>
 

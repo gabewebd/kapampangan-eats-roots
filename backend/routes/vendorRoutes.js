@@ -9,6 +9,7 @@ router.get('/trending', vendorController.getTrending);
 router.get('/filter/heritage', vendorController.getHeritageSites);
 router.get('/filter/eateries', vendorController.getEateries);
 router.get('/explore/map', vendorController.getAllVendors);
+router.get('/:id/related', vendorController.getRelatedVendors);
 router.get('/:id', vendorController.getVendorById);
 
 // Protected routes — require JWT

@@ -9,8 +9,8 @@
       <div class="inline-flex p-4 bg-angeles-blue/10 rounded-3xl text-angeles-blue mb-6">
         <lucide-icon [name]="user" class="w-8 h-8"></lucide-icon>
       </div>
-      <h1 class="font-serif text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-      <p class="text-gray-500 font-medium">Taste the Story. Discover the Roots.</p>
+      <h1 class="font-serif text-3xl font-bold text-gray-900 mb-2">{{ isRegisterMode ? 'Join the Community' : 'Welcome Back' }}</h1>
+      <p class="text-gray-500 font-medium">{{ isRegisterMode ? 'Create an account to explore more.' : 'Taste the Story. Discover the Roots.' }}</p>
     </div>
 
     <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="space-y-6">
@@ -18,44 +18,81 @@
         {{ error }}
       </div>
 
-      <div>
+      <div *ngIf="isRegisterMode">
+        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1">Full Name</label>
+        <div class="relative">
+          <lucide-icon [name]="user" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
+          <input type="text" name="name" [(ngModel)]="registerData.name" required 
+                 placeholder="Juan Dela Cruz" 
+                 class="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-12 pr-4 py-4 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-angeles-blue/10 focus:border-angeles-blue focus:bg-white transition-all shadow-sm" />
+        </div>
+      </div>
+
+      <!-- Email Field (Login) -->
+      <div *ngIf="!isRegisterMode">
         <label class="block text-sm font-bold text-gray-700 mb-2 ml-1">Email Address</label>
         <div class="relative">
           <lucide-icon [name]="mail" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
-          <input type="email" name="email" [(ngModel)]="credentials.email" required 
+          <input type="email" name="email_login" [(ngModel)]="credentials.email" required 
                  placeholder="name@example.com" 
                  class="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-12 pr-4 py-4 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-angeles-blue/10 focus:border-angeles-blue focus:bg-white transition-all shadow-sm" />
         </div>
       </div>
 
-      <div>
+      <!-- Email Field (Register) -->
+      <div *ngIf="isRegisterMode">
+        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1">Email Address</label>
+        <div class="relative">
+          <lucide-icon [name]="mail" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
+          <input type="email" name="email_register" [(ngModel)]="registerData.email" required 
+                 placeholder="name@example.com" 
+                 class="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-12 pr-4 py-4 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-angeles-blue/10 focus:border-angeles-blue focus:bg-white transition-all shadow-sm" />
+        </div>
+      </div>
+
+      <!-- Password Field (Login) -->
+      <div *ngIf="!isRegisterMode">
         <label class="block text-sm font-bold text-gray-700 mb-2 ml-1">Password</label>
         <div class="relative">
           <lucide-icon [name]="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
-          <input type="password" name="password" [(ngModel)]="credentials.password" required 
+          <input type="password" name="password_login" [(ngModel)]="credentials.password" required 
                  placeholder="••••••••" 
                  class="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-12 pr-4 py-4 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-angeles-blue/10 focus:border-angeles-blue focus:bg-white transition-all shadow-sm" />
         </div>
       </div>
 
-      <div class="flex items-center justify-between text-sm px-1">
+      <!-- Password Field (Register) -->
+      <div *ngIf="isRegisterMode">
+        <label class="block text-sm font-bold text-gray-700 mb-2 ml-1">Password</label>
+        <div class="relative">
+          <lucide-icon [name]="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></lucide-icon>
+          <input type="password" name="password_register" [(ngModel)]="registerData.password" required 
+                 placeholder="••••••••" 
+                 class="w-full bg-gray-50/50 border border-gray-200 rounded-2xl pl-12 pr-4 py-4 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-angeles-blue/10 focus:border-angeles-blue focus:bg-white transition-all shadow-sm" />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between text-sm px-1" *ngIf="!isRegisterMode">
         <label class="flex items-center gap-2 cursor-pointer group">
           <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-angeles-blue focus:ring-angeles-blue" />
           <span class="text-gray-600 font-medium group-hover:text-gray-900 transition-colors">Remember me</span>
         </label>
-        <a href="#" class="text-angeles-blue font-bold hover:underline">Forgot password?</a>
+        <button type="button" class="text-angeles-blue font-bold hover:underline opacity-80" onclick="alert('Forgot password coming soon!')">Forgot password?</button>
       </div>
 
       <button type="submit" [disabled]="!loginForm.valid || isLoading"
-              class="w-full bg-angeles-blue text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-blue-900/20 hover:shadow-2xl hover:shadow-blue-900/40 hover:-translate-y-1 active:translate-y-0 transition-all duration-300 group disabled:opacity-50 disabled:scale-100">
+              class="w-full bg-angeles-blue text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-blue-900/20 hover:shadow-2xl hover:shadow-blue-900/40 hover:-translate-y-1 active:translate-y-0 transition-all duration-300 group disabled:opacity-50 disabled:scale-100 disabled:hover:translate-y-0 disabled:hover:shadow-xl">
         <lucide-icon *ngIf="isLoading" [name]="logIn" class="w-5 h-5 animate-spin"></lucide-icon>
-        <span>{{ isLoading ? 'Authenticating...' : 'Sign In' }}</span>
+        <span>{{ isLoading ? (isRegisterMode ? 'Creating Account...' : 'Authenticating...') : (isRegisterMode ? 'Join Now' : 'Sign In') }}</span>
         <lucide-icon *ngIf="!isLoading" [name]="arrowRight" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></lucide-icon>
       </button>
 
       <div class="text-center pt-4">
         <p class="text-gray-500 text-sm font-medium">
-          Don't have an account? <a routerLink="/submit" class="text-angeles-red font-bold hover:underline">Join the Community</a>
+          {{ isRegisterMode ? 'Already have an account?' : "Don't have an account?" }} 
+          <button type="button" (click)="toggleMode()" class="text-angeles-red font-bold hover:underline border-none bg-transparent cursor-pointer">
+            {{ isRegisterMode ? 'Sign In' : 'Join the Community' }}
+          </button>
         </p>
       </div>
     </form>
