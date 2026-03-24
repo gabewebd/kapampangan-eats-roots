@@ -1,5 +1,5 @@
-import { Component, inject, OnInit, AfterViewInit, OnDestroy, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, AfterViewInit, OnDestroy, signal, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { LucideAngularModule, Filter, Coffee, Home, Utensils, Landmark, Navigation } from 'lucide-angular';
 import * as L from 'leaflet';
 import { VendorService, Vendor } from '../../services/vendor';
@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
   styleUrl: './explore-map.css',
 })
 export class ExploreMap implements OnInit, AfterViewInit, OnDestroy {
+  private platformId = inject(PLATFORM_ID);
   private vendorService = inject(VendorService);
   private router = inject(Router);
   
@@ -28,17 +29,19 @@ export class ExploreMap implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {}
 
   ngAfterViewInit() {
-    this.initMap();
-    this.loadMarkers();
-    // Multiple attempts to fix tile rendering issues
-    [100, 500, 1000, 2000].forEach(delay => {
-      setTimeout(() => {
-        if (this.map) {
-          this.map.invalidateSize();
-          console.log(`Audit: Map invalidated at ${delay}ms`);
-        }
-      }, delay);
-    });
+    if (isPlatformBrowser(this.platformId)) {
+        this.initMap();
+        this.loadMarkers();
+        // Multiple attempts to fix tile rendering issues
+        [100, 500, 1000, 2000].forEach(delay => {
+          setTimeout(() => {
+            if (this.map) {
+              this.map.invalidateSize();
+              console.log(`Audit: Map invalidated at ${delay}ms`);
+            }
+          }, delay);
+        });
+    }
   }
 
   ngOnDestroy() {
@@ -80,10 +83,6 @@ export class ExploreMap implements OnInit, AfterViewInit, OnDestroy {
     this.selectedCategory.set(category);
     this.loadMarkers();
     this.isFilterOpen.set(false);
-  }
-
-  private performReverseGeocoding(lat: number, lng: number) {
-    // Optional: could show address in a tooltip or status bar
   }
 
   locateMe() {

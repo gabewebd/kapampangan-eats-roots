@@ -74,7 +74,7 @@ export class Home implements OnInit {
         : this.vendorService.getTrending();
 
     obs$.subscribe({
-      next: (data) => {
+      next: (data: Vendor[]) => {
         this.trendingSpots = data;
         this.loading.set(false);
       },

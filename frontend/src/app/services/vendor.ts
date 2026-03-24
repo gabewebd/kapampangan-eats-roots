@@ -91,6 +91,7 @@ export class VendorService {
     );
   }
 
+
   getRelatedVendors(id: string): Observable<Vendor[]> {
     return this.http.get<Vendor[]>(`${this.apiUrl}/${id}/related`).pipe(
       catchError(handleHttpError(`Related Vendors ${id}`))
