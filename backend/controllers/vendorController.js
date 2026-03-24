@@ -119,7 +119,7 @@ exports.createVendor = async (req, res) => {
 // GET: Trending Local Spots (Verified only)
 exports.getTrending = async (req, res) => {
     try {
-        const trending = await Vendor.find({ isVerified: true }).sort({ rating: -1 }).limit(8);
+        const trending = await Vendor.find({ isVerified: true, category: 'Local Eatery' }).sort({ rating: -1 }).limit(8);
         return res.status(200).json(trending);
     } catch (err) {
         console.error('Audit: getTrending failed:', err);

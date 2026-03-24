@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { LucideAngularModule, Pencil, Heart, Bookmark, MapPin, LogOut, ChevronRight, Star, Loader, X, Check, Quote } from 'lucide-angular';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth';
@@ -26,9 +26,10 @@ export class Profile implements OnInit {
   readonly check = Check;
   readonly quote = Quote;
 
+  private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private userService = inject(UserService);
-  private router = inject(Router);
+  public router = inject(Router);
   private fb = inject(FormBuilder);
 
   loading = signal(true);
@@ -56,6 +57,7 @@ export class Profile implements OnInit {
     pendingSubmissions: 0
   });
 
+  isOwnProfile = signal(false);
   isEditModalOpen = signal(false);
   editForm!: FormGroup;
   isSaving = signal(false);
@@ -68,77 +70,66 @@ export class Profile implements OnInit {
 
   ngOnInit() {
     this.initEditForm();
-    const adminToken = this.authService.getToken();
-    const userToken = this.authService.getUserToken();
+    
+    this.route.paramMap.subscribe((params: any) => {
+      const targetId = params.get('id');
+      const currentUserData = localStorage.getItem('user_data');
+      const parsedUser = currentUserData ? JSON.parse(currentUserData) as any : null;
+      const loggedInUserId = parsedUser ? parsedUser.id || parsedUser._id : null;
 
-    if (userToken || adminToken) {
-      this.isLoggedIn.set(true);
-      if (userToken) {
-        try {
-          const userStr = localStorage.getItem('user_data');
-          if (userStr) {
-            const user = JSON.parse(userStr);
-            this.userService.getProfile(user.id || user._id).subscribe({
-              next: (fullUser: any) => {
-                if (fullUser) {
-                  this.profile.set({
-                    id: fullUser._id,
-                    name: fullUser.name || fullUser.email || 'Explorer',
-                    initials: this.getInitials(fullUser.name || fullUser.email || 'Explorer'),
-                    bio: fullUser.bio || 'Local Explorer',
-                    memberSince: new Date(fullUser.memberSince).getFullYear().toString() || '2024',
-                    badge: 'Local Explorer',
-                    visited: fullUser.visited?.length || 0,
-                    saved: fullUser.savedPlaces?.length || 0,
-                    favorites: fullUser.favorites?.length || 0,
-                    reviews: 0,
-                    pendingSubmissions: fullUser.submissions?.filter((s: any) => !s.isVerified).length || 0
-                  });
-                  this.favorites.set(fullUser.favorites || []);
-                  this.savedPlaces.set(fullUser.savedPlaces || []);
-                  this.submissions.set(fullUser.submissions || []);
-                  this.visitedPlaces.set(fullUser.visited || []);
-                }
-                this.loading.set(false);
-              },
-              error: (err) => {
-                console.error('Audit [Profile]: Fetch failed', err);
-                this.loading.set(false);
-              }
-            });
-            return; // Exit early as we are loading async
-          }
-        } catch (e) {
-          console.error('Audit [Profile]: User decode failure', e);
-        }
-      } else if (adminToken) {
-        try {
-          const adminStr = localStorage.getItem('admin_user');
-          if (adminStr) {
-            const admin = JSON.parse(adminStr);
-            this.profile.set({
-              id: admin.id || admin._id || 'admin',
-              name: admin.username || admin.name || 'Admin User',
-              initials: this.getInitials(admin.username || admin.name || 'Admin User'),
-              bio: 'System Administrator',
-              memberSince: '2024',
-              badge: 'Community Contributor',
-              visited: 0,
-              saved: 0,
-              favorites: 0,
-              reviews: 0,
-              pendingSubmissions: 0
-            });
-          }
-        } catch (e) {
-          console.error('Audit [Profile]: Admin decode failure', e);
-        }
+      // If viewing a specific ID, check if it's the current user
+      if (targetId) {
+        this.isOwnProfile.set(targetId === loggedInUserId);
+        this.loadProfile(targetId);
+      } else if (loggedInUserId) {
+        // No ID in URL, view own profile
+        this.isOwnProfile.set(true);
+        this.loadProfile(loggedInUserId);
+      } else {
+        // Not logged in and no ID provided
+        this.router.navigate(['/login']);
       }
-    } else {
-      // If no session found, redirect to login so we don't show a "Guest User" profile
-      this.router.navigate(['/login']);
+    });
+
+    const adminToken = this.authService.getToken();
+    if (adminToken && !this.route.snapshot.paramMap.get('id')) {
+        this.isLoggedIn.set(true);
+        // Admin view handling...
     }
-    this.loading.set(false);
+  }
+
+  loadProfile(userId: string) {
+    this.loading.set(true);
+    this.isLoggedIn.set(true); // Treat as logged in view for UI purposes
+    
+    this.userService.getProfile(userId).subscribe({
+      next: (fullUser: any) => {
+        if (fullUser) {
+          this.profile.set({
+            id: fullUser._id,
+            name: fullUser.name || fullUser.email || 'Explorer',
+            initials: this.getInitials(fullUser.name || fullUser.email || 'Explorer'),
+            bio: fullUser.bio || 'Local Explorer',
+            memberSince: new Date(fullUser.memberSince).getFullYear().toString() || '2024',
+            badge: 'Local Explorer',
+            visited: fullUser.visited?.length || 0,
+            saved: fullUser.savedPlaces?.length || 0,
+            favorites: fullUser.favorites?.length || 0,
+            reviews: 0,
+            pendingSubmissions: fullUser.submissions?.filter((s: any) => !s.isVerified).length || 0
+          });
+          this.favorites.set(fullUser.favorites || []);
+          this.savedPlaces.set(fullUser.savedPlaces || []);
+          this.submissions.set(fullUser.submissions || []);
+          this.visitedPlaces.set(fullUser.visited || []);
+        }
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Audit [Profile]: Fetch failed', err);
+        this.loading.set(false);
+      }
+    });
   }
 
   getInitials(name: string): string {

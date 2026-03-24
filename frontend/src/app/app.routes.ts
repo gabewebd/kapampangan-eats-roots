@@ -18,6 +18,7 @@ export const routes: Routes = [
   { path: 'explore', component: ExploreMap },
   { path: 'submit', component: SubmitListing },
   { path: 'profile', component: Profile },
+  { path: 'profile/:id', component: Profile },
   { path: 'login', component: UserLogin },
   { path: 'admin-login', component: AdminLogin },
   { path: 'admin-dashboard', component: AdminDashboard, canActivate: [authGuard] },

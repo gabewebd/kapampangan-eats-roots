@@ -44,6 +44,7 @@ export class Home implements OnInit {
     this.vendorService.getTrending().subscribe({
       next: (data: Vendor[]) => {
         console.log('Audit: Trending spots received', data);
+        // Corrected trending behavior: already filtered in backend
         this.trendingSpots = data;
         this.loading.set(false);
       },
