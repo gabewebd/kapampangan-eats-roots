@@ -8,6 +8,7 @@ export interface UserProfile {
   name: string;
   email: string;
   memberSince: string;
+  bio?: string;
   favorites: any[];
   visited: any[];
   submissions: any[];
@@ -56,6 +57,15 @@ export class UserService {
     return this.http.post(`${this.apiUrl}/toggle-visited`, { userId, vendorId }).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error('Audit [User]: Toggle visited failed', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  updateProfile(userId: string, data: { name?: string, bio?: string }): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${userId}`, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Audit [User]: Update profile failed', error);
         return throwError(() => error);
       })
     );

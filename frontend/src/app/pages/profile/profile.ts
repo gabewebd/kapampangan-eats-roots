@@ -1,19 +1,20 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { LucideAngularModule, Settings, Heart, Bookmark, MapPin, LogOut, ChevronRight, Star, Loader } from 'lucide-angular';
+import { LucideAngularModule, Pencil, Heart, Bookmark, MapPin, LogOut, ChevronRight, Star, Loader, X, Check, Quote } from 'lucide-angular';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth';
 import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, RouterModule],
+  imports: [CommonModule, LucideAngularModule, RouterModule, FormsModule, ReactiveFormsModule],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
 export class Profile implements OnInit {
-  readonly settings = Settings;
+  readonly pencil = Pencil;
   readonly heart = Heart;
   readonly bookmark = Bookmark;
   readonly mapPin = MapPin;
@@ -21,10 +22,14 @@ export class Profile implements OnInit {
   readonly chevronRight = ChevronRight;
   readonly star = Star;
   readonly loader = Loader;
+  readonly xIcon = X;
+  readonly check = Check;
+  readonly quote = Quote;
 
   private authService = inject(AuthService);
   private userService = inject(UserService);
   private router = inject(Router);
+  private fb = inject(FormBuilder);
 
   loading = signal(true);
   isLoggedIn = signal(false);
@@ -38,8 +43,10 @@ export class Profile implements OnInit {
 
   // Profile data with fallback defaults
   profile = signal({
+    id: '',
     name: 'Guest User',
     initials: 'GU',
+    bio: 'Local Explorer',
     memberSince: '2024',
     badge: 'Community Explorer',
     visited: 0,
@@ -48,7 +55,19 @@ export class Profile implements OnInit {
     reviews: 0,
     pendingSubmissions: 0
   });
+
+  isEditModalOpen = signal(false);
+  editForm!: FormGroup;
+  isSaving = signal(false);
+  initEditForm() {
+    this.editForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      bio: ['', [Validators.maxLength(150)]]
+    });
+  }
+
   ngOnInit() {
+    this.initEditForm();
     const adminToken = this.authService.getToken();
     const userToken = this.authService.getUserToken();
 
@@ -63,8 +82,10 @@ export class Profile implements OnInit {
               next: (fullUser: any) => {
                 if (fullUser) {
                   this.profile.set({
+                    id: fullUser._id,
                     name: fullUser.name || fullUser.email || 'Explorer',
                     initials: this.getInitials(fullUser.name || fullUser.email || 'Explorer'),
+                    bio: fullUser.bio || 'Local Explorer',
                     memberSince: new Date(fullUser.memberSince).getFullYear().toString() || '2024',
                     badge: 'Local Explorer',
                     visited: fullUser.visited?.length || 0,
@@ -96,8 +117,10 @@ export class Profile implements OnInit {
           if (adminStr) {
             const admin = JSON.parse(adminStr);
             this.profile.set({
+              id: admin.id || admin._id || 'admin',
               name: admin.username || admin.name || 'Admin User',
               initials: this.getInitials(admin.username || admin.name || 'Admin User'),
+              bio: 'System Administrator',
               memberSince: '2024',
               badge: 'Community Contributor',
               visited: 0,
@@ -120,6 +143,59 @@ export class Profile implements OnInit {
 
   getInitials(name: string): string {
     return name.split(' ').map(w => w.charAt(0)).join('').toUpperCase().slice(0, 2);
+  }
+
+  openEditModal() {
+    this.editForm.patchValue({
+      name: this.profile().name,
+      bio: this.profile().bio
+    });
+    this.isEditModalOpen.set(true);
+  }
+
+  closeEditModal() {
+    this.isEditModalOpen.set(false);
+  }
+
+  saveProfile() {
+    if (this.editForm.invalid) {
+      this.editForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSaving.set(true);
+    const userId = this.profile().id;
+    const updateData = this.editForm.value;
+
+    this.userService.updateProfile(userId, updateData).subscribe({
+      next: (res) => {
+        if (res.success) {
+          // Update local signal
+          this.profile.update(p => ({
+            ...p,
+            name: updateData.name,
+            initials: this.getInitials(updateData.name),
+            bio: updateData.bio
+          }));
+          
+          // If we have local user_data, update it too if name changed
+          const userStr = localStorage.getItem('user_data');
+          if (userStr) {
+            const user = JSON.parse(userStr);
+            user.name = updateData.name;
+            localStorage.setItem('user_data', JSON.stringify(user));
+          }
+          
+          this.closeEditModal();
+        }
+        this.isSaving.set(false);
+      },
+      error: (err) => {
+        console.error('Audit [Profile]: Update failed', err);
+        this.isSaving.set(false);
+        alert('Failed to update profile. Please try again.');
+      }
+    });
   }
 
   signOut() {

@@ -14,4 +14,7 @@ router.post('/toggle-favorite', userController.toggleFavorite);
 // Route to Toggle Visited
 router.post('/toggle-visited', userController.toggleVisited);
 
+// Route to Update Profile
+router.put('/:id', userController.updateProfile);
+
 module.exports = router;

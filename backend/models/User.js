@@ -8,7 +8,8 @@ const UserSchema = new mongoose.Schema({
     savedPlaces: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' }],
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' }],
     visited: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' }],
-    submissions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' }]
+    submissions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' }],
+    bio: { type: String, default: 'Local Explorer' }
 });
 
 module.exports = mongoose.model('User', UserSchema);

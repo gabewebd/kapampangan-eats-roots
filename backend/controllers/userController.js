@@ -108,3 +108,35 @@ exports.toggleVisited = async (req, res) => {
         return res.status(500).json({ error: 'Server Error' });
     }
 };
+
+// PUT: Update User Profile (Name, Bio)
+exports.updateProfile = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, bio } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: 'Invalid User ID format' });
+        }
+
+        const user = await User.findById(id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        if (name) user.name = name;
+        if (bio !== undefined) user.bio = bio;
+
+        await user.save();
+        return res.status(200).json({ 
+            success: true, 
+            message: 'Profile updated successfully',
+            user: {
+                id: user._id,
+                name: user.name,
+                bio: user.bio
+            }
+        });
+    } catch (err) {
+        console.error('Audit: updateProfile failed:', err);
+        return res.status(500).json({ error: 'Server Error' });
+    }
+};
