@@ -114,3 +114,20 @@
     transform: scale(1.1);
     box-shadow: 0 10px 15px -3px rgb(234 179 8 / 0.3);
 }
+
+/* Edit Modal Map Correction */
+.leaflet-container {
+    border-radius: 1rem;
+    z-index: 1 !important;
+}
+
+/* Responsive Grid Adjustments for Modal */
+@media (max-width: 768px) {
+    .max-w-4xl {
+        max-width: 100%;
+        margin: 0;
+        height: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+}

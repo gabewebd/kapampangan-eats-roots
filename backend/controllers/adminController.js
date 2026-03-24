@@ -1,5 +1,6 @@
 const Analytics = require('../models/analytics');
 const Vendor = require('../models/Vendor');
+const { uploadToCloudinary } = require('../config/cloudinary');
 
 // GET: Dashboard Metrics
 exports.getDashboardMetrics = async (req, res) => {
@@ -118,11 +119,63 @@ exports.approveVendor = async (req, res) => {
 // PUT: Update a Vendor (Edit)
 exports.updateVendor = async (req, res) => {
     try {
+        const { id } = req.params;
+        const updateData = { ...req.body };
+
+        // Parse JSON fields if they are sent as strings (FormData behavior)
+        if (typeof updateData.authenticityTraits === 'string') {
+            updateData.authenticityTraits = JSON.parse(updateData.authenticityTraits);
+        }
+        if (typeof updateData.menuHighlights === 'string') {
+            updateData.menuHighlights = JSON.parse(updateData.menuHighlights);
+        }
+        if (typeof updateData.location === 'string') {
+            updateData.location = JSON.parse(updateData.location);
+        }
+
+        // Handle Image Uploads via Cloudinary buffer streams
+        if (req.files) {
+            // Main Images
+            if (req.files['images']) {
+                const vendorImageFiles = req.files['images'];
+                const vendorImageResults = await Promise.all(
+                    vendorImageFiles.map(f => uploadToCloudinary(f.buffer, 'angeles-eats-roots/vendors'))
+                );
+                const newImageUrls = vendorImageResults.map(r => r.secure_url);
+                
+                let existingImages = [];
+                if (req.body.existingImages) {
+                    existingImages = JSON.parse(req.body.existingImages);
+                }
+                updateData.images = [...existingImages, ...newImageUrls].slice(0, 4);
+            }
+
+            // Menu Item Images
+            if (req.files['menuItemImages'] && updateData.menuHighlights) {
+                const menuImageFiles = req.files['menuItemImages'];
+                const menuImageResults = await Promise.all(
+                    menuImageFiles.map(f => uploadToCloudinary(f.buffer, 'angeles-eats-roots/menu-items'))
+                );
+                const newMenuUrls = menuImageResults.map(r => r.secure_url);
+
+                let fileIndex = 0;
+                updateData.menuHighlights = updateData.menuHighlights.map(item => {
+                    if (item.hasNewPhoto && newMenuUrls[fileIndex]) {
+                        item.image = newMenuUrls[fileIndex];
+                        fileIndex++;
+                    }
+                    delete item.hasNewPhoto;
+                    return item;
+                });
+            }
+        }
+
         const vendor = await Vendor.findByIdAndUpdate(
-            req.params.id,
-            { $set: req.body },
+            id,
+            { $set: updateData },
             { new: true, runValidators: true }
         );
+
         if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
         return res.status(200).json({ message: 'Vendor updated successfully', vendor });
     } catch (err) {
