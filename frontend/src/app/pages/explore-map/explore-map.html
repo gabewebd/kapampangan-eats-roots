@@ -1,62 +1,28 @@
 <div class="w-full min-h-screen relative overflow-hidden bg-[#E6ECE3] pb-[95px] md:pb-12 md:pt-28 font-sans">
   
-  <!-- CSS Map Roads (Abstract Lines) -->
-  <div class="absolute inset-0 z-0 pointer-events-none opacity-40 md:opacity-50">
-    <!-- Horizontal passing road -->
-    <div class="absolute top-[25%] left-0 w-[120%] h-1.5 md:h-2 bg-white/90 -rotate-6 transform origin-left shadow-sm"></div>
-    <div class="absolute top-[48%] left-0 w-[120%] h-1.5 md:h-2 bg-white/90 rotate-2 transform origin-left shadow-sm"></div>
-    <!-- Vertical intersecting roads -->
-    <div class="absolute top-0 left-[35%] w-1.5 md:w-2 h-[120%] bg-white/90 rotate-[15deg] transform origin-top shadow-sm"></div>
-    <div class="absolute top-0 left-[68%] w-1.5 md:w-2 h-[120%] bg-white/90 -rotate-[8deg] transform origin-top shadow-sm"></div>
-    
-    <!-- Background Location Labels -->
-    <div class="absolute top-[20%] left-[15%] text-[10px] md:text-sm font-bold tracking-[0.2em] text-[#869E81] uppercase drop-shadow-sm select-none">Balibago</div>
-    <div class="absolute top-[52%] left-[62%] text-[10px] md:text-sm font-bold tracking-[0.2em] text-[#869E81] uppercase drop-shadow-sm select-none">Sto. Rosario</div>
-    <div class="absolute top-[70%] left-[20%] text-[10px] md:text-sm font-bold tracking-[0.2em] text-[#869E81] uppercase drop-shadow-sm select-none">Cutcut</div>
+  <!-- Real Map Container -->
+  <div class="absolute inset-0 z-0">
+    <div id="map" class="w-full h-full"></div>
   </div>
 
   <div class="max-w-[1440px] mx-auto h-full relative">
     <!-- Foreground UI: Header -->
     <div class="relative z-20 px-6 pt-12 md:pt-8 md:px-12 xl:px-16 flex justify-between items-start pointer-events-none">
       <!-- Title -->
-      <div class="pointer-events-auto bg-white/30 backdrop-blur-md rounded-3xl p-4 md:p-6 shadow-xl border border-white/40 border-b-white/20 transition-transform duration-300 hover:-translate-y-1">
+      <div class="pointer-events-auto bg-white/70 backdrop-blur-md rounded-3xl p-4 md:p-6 shadow-xl border border-white/40 border-b-white/20 transition-transform duration-300 hover:-translate-y-1">
         <h1 class="font-serif text-[32px] md:text-5xl font-bold text-gray-900 leading-tight drop-shadow-sm">Explore Map</h1>
         <p class="text-[14px] md:text-lg text-gray-700 font-medium mt-1 drop-shadow-sm">Angeles City, Pampanga</p>
       </div>
       
       <!-- Filter Button -->
       <button class="pointer-events-auto bg-white hover:bg-gray-50 text-angeles-blue shadow-xl shadow-blue-900/10 rounded-full p-3.5 md:p-5 transition-all duration-300 hover:scale-105 active:scale-95 border border-white/60 group">
-        <lucide-icon name="filter" class="w-5 h-5 md:w-7 md:h-7 transform group-hover:-translate-y-0.5 transition-transform"></lucide-icon>
+        <lucide-icon [name]="filter" class="w-5 h-5 md:w-7 md:h-7 transform group-hover:-translate-y-0.5 transition-transform"></lucide-icon>
       </button>
     </div>
 
-    <!-- Map Markers -->
-    <div class="absolute inset-0 z-10 md:relative md:h-[700px] md:mt-8 pointer-events-none md:bg-white/10 md:backdrop-blur-sm md:rounded-[40px] md:mx-6 lg:mx-12 md:shadow-2xl md:border md:border-white/30 md:overflow-hidden">
-      <!-- Added glowing atmospheric elements for desktop within the map container -->
-      <div class="absolute top-[20%] left-[60%] w-[400px] h-[400px] bg-angeles-blue/5 rounded-full blur-3xl hidden md:block"></div>
-      <div class="absolute bottom-[20%] left-[20%] w-[350px] h-[350px] bg-angeles-red/5 rounded-full blur-3xl hidden md:block"></div>
-
-      <div *ngFor="let marker of markers" 
-           class="absolute transform -translate-x-1/2 -translate-y-full cursor-pointer pointer-events-auto group"
-           [style.top]="marker.top" [style.left]="marker.left">
-           
-           <!-- The Marker Bubble -->
-           <div class="relative flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-full border-[3px] md:border-4 border-white shadow-xl z-10 transition-transform duration-300 group-hover:-translate-y-2 group-hover:scale-110" [ngClass]="marker.colorClasses">
-             <lucide-icon [name]="marker.icon" class="w-4 h-4 md:w-6 md:h-6 drop-shadow-md"></lucide-icon>
-             
-             <!-- Glow pulse ring behind marker on hover -->
-             <div class="absolute inset-0 rounded-full border-2 opacity-0 group-hover:opacity-100 group-hover:animate-ping duration-1000 z-[-1]"
-                  [ngClass]="{'border-angeles-blue': marker.type === 'heritage', 'border-angeles-red': marker.type === 'eatery'}"></div>
-           </div>
-           
-           <!-- The Marker Tail (Triangle) -->
-           <div class="absolute bottom-[-6px] md:bottom-[-8px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[8px] md:border-l-[10px] border-r-[8px] md:border-r-[10px] border-t-[10px] md:border-t-[14px] border-l-transparent border-r-transparent z-0 transition-transform duration-300 group-hover:-translate-y-2"
-                [ngClass]="{'border-t-angeles-blue': marker.type === 'heritage', 'border-t-angeles-red': marker.type === 'eatery'}">
-           </div>
-           
-           <!-- Marker Drop Shadow effect below the tail -->
-           <div class="absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-4 h-2 bg-black/20 rounded-[100%] blur-sm transition-all duration-300 group-hover:scale-75 group-hover:opacity-50"></div>
-      </div>
+    <!-- Map UI Overlay (Bottom section if needed or just empty space for map) -->
+    <div class="absolute inset-0 z-10 pointer-events-none">
+      <!-- We can add other overlays here if needed, but for now we let the map be clickable -->
     </div>
   </div>
 </div>
