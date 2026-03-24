@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { LucideAngularModule, Camera, Store, Clock, BookOpen, Heart, ShieldCheck, Sparkles, X, Plus, Trash2, Check, Loader, Landmark, MapPin, Navigation, Info } from 'lucide-angular';
+import { LucideAngularModule, Camera, Store, Clock, BookOpen, Heart, ShieldCheck, Sparkles, X, Plus, Trash2, Check, Loader, Landmark, MapPin, Navigation, Info, Utensils, Activity } from 'lucide-angular';
 import { SubmissionService } from '../../services/submission';
 import { Router } from '@angular/router';
 import * as L from 'leaflet';
@@ -12,6 +12,9 @@ import { HttpClient } from '@angular/common/http';
   selector: 'app-submit-listing',
   standalone: true,
   imports: [CommonModule, LucideAngularModule, ReactiveFormsModule],
+  providers: [
+    LucideAngularModule.pick({ Camera, Store, Clock, BookOpen, Heart, ShieldCheck, Sparkles, X, Plus, Trash2, Check, Loader, Landmark, MapPin, Navigation, Info, Utensils, Activity }).providers!
+  ],
   templateUrl: './submit-listing.html',
   styleUrl: './submit-listing.css',
 })
@@ -181,13 +184,20 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
         this.performReverseGeocoding(lat, lng);
     });
 
-    // Give Angular time to finish rendering the CSS layout,
-    // then force Leaflet to recalculate the size and fetch tiles.
-    setTimeout(() => {
-      if (this.map) {
-        this.map.invalidateSize();
-      }
-    }, 100);
+    // Persistent invalidation loop to fix "gray box" which happens when 
+    // container is initially zero-height
+    let attempts = 0;
+    const invalidateInterval = setInterval(() => {
+        if (this.map) {
+            this.map.invalidateSize();
+            const size = this.map.getSize();
+            if (size.x > 0 && size.y > 0) {
+                clearInterval(invalidateInterval);
+            }
+        }
+        attempts++;
+        if (attempts > 20) clearInterval(invalidateInterval); // Safety break
+    }, 200);
   }
 
   private updateMarker(lat: number, lng: number) {
