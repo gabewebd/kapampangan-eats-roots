@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError, retry, timer } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface Vendor {
@@ -63,42 +63,49 @@ export class VendorService {
 
   getTrending(): Observable<Vendor[]> {
     return this.http.get<Vendor[]>(`${this.apiUrl}/trending`).pipe(
+      retry({ count: 1, delay: () => timer(1000) }),
       catchError(handleHttpError('Trending'))
     );
   }
 
   getVendorById(id: string): Observable<Vendor> {
     return this.http.get<Vendor>(`${this.apiUrl}/${id}`).pipe(
+      retry({ count: 1, delay: () => timer(1000) }),
       catchError(handleHttpError(`Vendor ${id}`))
     );
   }
 
   getHeritageSites(): Observable<Vendor[]> {
     return this.http.get<Vendor[]>(`${this.apiUrl}/filter/heritage`).pipe(
+      retry({ count: 1, delay: () => timer(1000) }),
       catchError(handleHttpError('Heritage Sites'))
     );
   }
 
   getEateries(): Observable<Vendor[]> {
     return this.http.get<Vendor[]>(`${this.apiUrl}/filter/eateries`).pipe(
+      retry({ count: 1, delay: () => timer(1000) }),
       catchError(handleHttpError('Eateries'))
     );
   }
 
   getAllForMap(): Observable<Partial<Vendor>[]> {
     return this.http.get<Partial<Vendor>[]>(`${this.apiUrl}/explore/map`).pipe(
+      retry({ count: 1, delay: () => timer(1000) }),
       catchError(handleHttpError('Map Data'))
     );
   }
 
   getRelatedVendors(id: string): Observable<Vendor[]> {
     return this.http.get<Vendor[]>(`${this.apiUrl}/${id}/related`).pipe(
+      retry({ count: 1, delay: () => timer(1000) }),
       catchError(handleHttpError(`Related Vendors ${id}`))
     );
   }
 
   search(query: string): Observable<Vendor[]> {
     return this.http.get<Vendor[]>(`${this.apiUrl}/search?q=${query}`).pipe(
+      retry({ count: 1, delay: () => timer(1000) }),
       catchError(handleHttpError('Search'))
     );
   }

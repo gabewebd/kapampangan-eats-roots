@@ -1,4 +1,4 @@
-import { Component, inject, AfterViewInit, OnDestroy, signal, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, AfterViewInit, OnDestroy, signal, HostListener, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Filter, Navigation } from 'lucide-angular';
 import * as L from 'leaflet';
@@ -15,6 +15,7 @@ import { Router } from '@angular/router';
 export class ExploreMap implements AfterViewInit, OnDestroy {
   private vendorService = inject(VendorService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   readonly filter = Filter;
   readonly navigationIcon = Navigation;
@@ -198,6 +199,7 @@ export class ExploreMap implements AfterViewInit, OnDestroy {
           });
         }
       });
+      this.cdr.detectChanges();
     });
   }
 }

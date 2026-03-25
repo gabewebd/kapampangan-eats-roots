@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Search, BadgeCheck, MapPin, Star, Utensils, Landmark, ArrowRight, Loader } from 'lucide-angular';
 import { VendorService, Vendor } from '../../services/vendor';
@@ -24,6 +24,7 @@ export class Home implements OnInit {
 
   private vendorService = inject(VendorService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   trendingSpots: Vendor[] = [];
   culturalHighlights: Vendor[] = [];
@@ -47,17 +48,22 @@ export class Home implements OnInit {
         // Corrected trending behavior: already filtered in backend
         this.trendingSpots = data;
         this.loading.set(false);
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
         console.error('Audit: Trending fetch failure', err);
         this.loading.set(false);
+        this.cdr.detectChanges();
       }
     });
   }
 
   loadHighlights() {
     this.vendorService.getHeritageSites().subscribe({
-      next: (data: Vendor[]) => this.culturalHighlights = data,
+      next: (data: Vendor[]) => {
+        this.culturalHighlights = data;
+        this.cdr.detectChanges();
+      },
       error: (err: any) => console.error('Audit: Highlights fetch failure', err)
     });
   }
@@ -78,8 +84,12 @@ export class Home implements OnInit {
       next: (data: Vendor[]) => {
         this.trendingSpots = data;
         this.loading.set(false);
+        this.cdr.detectChanges();
       },
-      error: () => this.loading.set(false)
+      error: () => {
+        this.loading.set(false);
+        this.cdr.detectChanges();
+      }
     });
   }
 

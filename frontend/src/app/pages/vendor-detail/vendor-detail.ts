@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, signal, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
@@ -34,6 +34,7 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   private reviewService = inject(ReviewService);
   private router = inject(Router);
   private voiceService = inject(VoiceStoryService);
+  private cdr = inject(ChangeDetectorRef);
 
   vendor: Vendor | null = null;
   relatedVendors: Vendor[] = [];
@@ -225,6 +226,7 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
         if (!data) return;
         this.vendor = data;
         this.isLoading.set(false);
+        this.cdr.detectChanges();
         this.checkIfFavorite();
         this.checkAndInitMap();
         
@@ -238,6 +240,7 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
         ).subscribe({
             next: (relatedData: Vendor[]) => {
                 this.relatedVendors = relatedData;
+                this.cdr.detectChanges();
             }
         });
       }
@@ -369,10 +372,12 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
       next: (data) => {
         this.reviews = data;
         this.isReviewsLoading.set(false);
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Action [Reviews]: Fetch failed', err);
         this.isReviewsLoading.set(false);
+        this.cdr.detectChanges();
       }
     });
   }
