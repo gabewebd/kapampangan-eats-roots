@@ -235,11 +235,11 @@
             <button type="button" routerLink="/" class="w-full md:w-1/4 py-5 rounded-2xl font-bold bg-white text-gray-700 shadow-sm border border-gray-200 hover:bg-gray-50 flex items-center justify-center gap-2 transition-all">
               Cancel
             </button>
-            <button type="submit" [disabled]="submitForm.invalid || selectedFiles.length === 0 || isLoading()" 
+            <button type="submit" [disabled]="submitForm.invalid || selectedFiles.length === 0 || isLoading() || connectionService.isOffline()" 
                     class="w-full md:w-3/4 bg-gradient-to-r from-[#0A2540] to-angeles-blue text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-2 shadow-2xl shadow-blue-900/30 hover:shadow-blue-900/50 hover:-translate-y-1 transition-all duration-300 disabled:opacity-40 disabled:bg-gray-400 disabled:from-gray-400 disabled:to-gray-500 disabled:shadow-none disabled:hover:translate-y-0 disabled:cursor-not-allowed group">
               <lucide-icon *ngIf="!isLoading()" name="shield-check" class="w-6 h-6 transform group-hover:scale-110 transition-transform"></lucide-icon>
               <lucide-icon *ngIf="isLoading()" name="loader" class="w-6 h-6 animate-spin"></lucide-icon>
-              <span class="text-[16px] tracking-wide">{{ isLoading() ? 'Submitting...' : 'Submit for Verification' }}</span>
+              <span class="text-[16px] tracking-wide">{{ connectionService.isOffline() ? 'Offline (Cannot Submit)' : isLoading() ? 'Submitting...' : 'Submit for Verification' }}</span>
             </button>
           </div>
           

@@ -10,6 +10,7 @@ import { UserService } from '../../services/user.service';
 import { ReviewService, Review } from '../../services/review.service';
 import { timeout, catchError, of } from 'rxjs';
 import { VoiceStoryService } from '../../services/voice-story.service';
+import { ConnectionService } from '../../services/connection.service';
 
 @Component({
   selector: 'app-vendor-detail',
@@ -35,6 +36,7 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   private router = inject(Router);
   private voiceService = inject(VoiceStoryService);
   private cdr = inject(ChangeDetectorRef);
+  private connectionService = inject(ConnectionService);
 
   vendor: Vendor | null = null;
   relatedVendors: Vendor[] = [];
@@ -290,6 +292,11 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   }
 
   toggleFavorite() {
+    if (this.connectionService.isOffline()) {
+      alert("You are currently offline. Please connect to the internet to save this to your favorites.");
+      return;
+    }
+
     if (!this.authService.isUserLoggedIn()) {
       this.router.navigate(['/login']);
       return;
@@ -312,6 +319,11 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   }
 
   toggleSaved() {
+    if (this.connectionService.isOffline()) {
+      alert("You are currently offline. Please connect to the internet to save this place.");
+      return;
+    }
+
     if (!this.authService.isUserLoggedIn()) {
       this.router.navigate(['/login']);
       return;
@@ -334,6 +346,11 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   }
 
   toggleVisited() {
+    if (this.connectionService.isOffline()) {
+      alert("You are currently offline. Please connect to the internet to mark this as visited.");
+      return;
+    }
+
     if (!this.authService.isUserLoggedIn()) {
       this.router.navigate(['/login']);
       return;
@@ -356,6 +373,11 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   }
 
   writeReview() {
+    if (this.connectionService.isOffline()) {
+      alert("You are currently offline. Please connect to the internet to write a review.");
+      return;
+    }
+
     if (!this.authService.isUserLoggedIn()) {
       this.router.navigate(['/login']);
       return;
@@ -383,6 +405,11 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
   }
 
   submitReview() {
+    if (this.connectionService.isOffline()) {
+      alert("You are currently offline. Cannot submit your review.");
+      return;
+    }
+
     if (!this.vendor || !this.newReview.comment.trim()) return;
     
     const userStr = localStorage.getItem('user_data');

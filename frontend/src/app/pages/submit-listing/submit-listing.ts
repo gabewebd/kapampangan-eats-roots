@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { LucideAngularModule, Camera, Store, Clock, BookOpen, Heart, ShieldCheck, Sparkles, X, Plus, Trash2, Check, Loader, Landmark, MapPin, Navigation, Info, Utensils, Activity } from 'lucide-angular';
 import { SubmissionService } from '../../services/submission';
+import { ConnectionService } from '../../services/connection.service';
 import { Router } from '@angular/router';
 import * as L from 'leaflet';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of, catchError } from 'rxjs';
@@ -24,6 +25,7 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
   private router = inject(Router);
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
+  public connectionService = inject(ConnectionService);
 
   // Grab the map element safely via Angular's ViewChild (same pattern as explore-map)
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
@@ -355,6 +357,12 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSubmit() {
+    if (this.connectionService.isOffline()) {
+      this.errorMessage.set('You are currently offline. Please connect to the internet to submit your place.');
+      this.playFeedbackSound('error');
+      return;
+    }
+
     if (this.submitForm.invalid || this.selectedFiles.length === 0) {
       if (this.selectedFiles.length === 0) {
           this.errorMessage.set('Please provide at least one photo of the vendor so the community can see it.');

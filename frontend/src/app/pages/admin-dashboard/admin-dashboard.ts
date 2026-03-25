@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth';
+import { ConnectionService } from '../../services/connection.service';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { LucideAngularModule, Loader, Check, LogOut, Activity, X, BadgeCheck, Eye, Pencil, Trash2, ChevronRight, Star, Landmark, BookOpen, Camera, Plus, Utensils, Navigation, Info, Search, MapPin } from 'lucide-angular';
 import * as L from 'leaflet';
@@ -28,6 +29,7 @@ export class AdminDashboard implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
+  private connectionService = inject(ConnectionService);
 
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
 
@@ -381,6 +383,11 @@ export class AdminDashboard implements OnInit, OnDestroy {
   }
 
   onApprove(id: string) {
+    if (this.connectionService.isOffline()) {
+      this.error.set('You are currently offline. Cannot approve vendors.');
+      return;
+    }
+
     this.confirmDialog.set({
       isOpen: true,
       title: 'Approve Listing?',
@@ -400,6 +407,11 @@ export class AdminDashboard implements OnInit, OnDestroy {
   }
 
   onReject(id: string) {
+    if (this.connectionService.isOffline()) {
+      this.error.set('You are currently offline. Cannot reject vendors.');
+      return;
+    }
+
     this.confirmDialog.set({
       isOpen: true,
       title: 'Reject Listing?',
@@ -418,6 +430,11 @@ export class AdminDashboard implements OnInit, OnDestroy {
   }
 
   onRestore(id: string) {
+    if (this.connectionService.isOffline()) {
+      this.error.set('You are currently offline. Cannot restore vendors.');
+      return;
+    }
+
     this.confirmDialog.set({
       isOpen: true,
       title: 'Restore Listing?',
@@ -437,6 +454,11 @@ export class AdminDashboard implements OnInit, OnDestroy {
   }
 
   onDeletePermanent(id: string) {
+    if (this.connectionService.isOffline()) {
+      this.error.set('You are currently offline. Cannot delete vendors.');
+      return;
+    }
+
     this.confirmDialog.set({
       isOpen: true,
       title: 'Delete Permanently?',
@@ -514,6 +536,12 @@ export class AdminDashboard implements OnInit, OnDestroy {
   }
 
   saveEdit() {
+    if (this.connectionService.isOffline()) {
+      this.error.set('You are currently offline. Cannot save vendor edits.');
+      this.isEditModalOpen.set(false);
+      return;
+    }
+
     if (this.editForm.invalid) {
       this.editForm.markAllAsTouched();
       return;
@@ -584,6 +612,11 @@ export class AdminDashboard implements OnInit, OnDestroy {
   }
 
   onAuthenticate(id: string) {
+    if (this.connectionService.isOffline()) {
+      this.error.set('You are currently offline. Cannot authenticate vendors.');
+      return;
+    }
+
     this.adminService.authenticateVendor(id, this.asfScores).subscribe({
       next: () => {
         this.showFeedback('Authenticated!', 'Vendor marked as Verified Authentic with ASF Scores.');

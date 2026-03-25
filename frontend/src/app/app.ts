@@ -6,7 +6,8 @@ import { Footer } from './components/shared/footer/footer';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './services/auth';
-import { LucideAngularModule, User, LogIn } from 'lucide-angular';
+import { ConnectionService } from './services/connection.service';
+import { LucideAngularModule, User, LogIn, WifiOff } from 'lucide-angular';
 
 @Component({
   selector: 'app-root',
@@ -22,9 +23,16 @@ export class App implements OnInit, OnDestroy {
   // Expose icons for template
   readonly userIcon = User;
   readonly logInIcon = LogIn;
+  readonly wifiOff = WifiOff;
 
   private router = inject(Router);
   public authService = inject(AuthService); // Inject AuthService for template access
+  public connectionService = inject(ConnectionService); // Track offline state
+
+  get isOffline() {
+    return this.connectionService.isOffline;
+  }
+  
   private routerSub!: Subscription;
 
   get isUserLoggedIn(): boolean {
