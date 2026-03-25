@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, inject, signal, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { LucideAngularModule, Camera, Store, Clock, BookOpen, Heart, ShieldCheck, Sparkles, X, Plus, Trash2, Check, Loader, Landmark, MapPin, Navigation, Info, Utensils, Activity } from 'lucide-angular';
@@ -23,6 +23,7 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
   private submissionService = inject(SubmissionService);
   private router = inject(Router);
   private http = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef);
 
   // Grab the map element safely via Angular's ViewChild (same pattern as explore-map)
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
@@ -291,6 +292,7 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
           const reader = new FileReader();
           reader.onload = (e: any) => {
             this.imagePreviews.push(e.target.result);
+            this.cdr.detectChanges();
           };
           reader.readAsDataURL(file);
         }
@@ -306,6 +308,7 @@ export class SubmitListing implements OnInit, AfterViewInit, OnDestroy {
   removeFile(index: number) {
     this.selectedFiles.splice(index, 1);
     this.imagePreviews.splice(index, 1);
+    this.cdr.detectChanges();
   }
 
   dismissError() {

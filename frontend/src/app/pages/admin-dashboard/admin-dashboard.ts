@@ -299,7 +299,10 @@ export class AdminDashboard implements OnInit, OnDestroy {
           const file = files[i];
           this.selectedFiles.push(file);
           const reader = new FileReader();
-          reader.onload = (e: any) => this.imagePreviews.push(e.target.result);
+          reader.onload = (e: any) => {
+            this.imagePreviews.push(e.target.result);
+            this.cdr.detectChanges();
+          };
           reader.readAsDataURL(file);
         }
       }
@@ -317,11 +320,13 @@ export class AdminDashboard implements OnInit, OnDestroy {
 
   removeExistingImage(index: number) {
     this.existingImages.splice(index, 1);
+    this.cdr.detectChanges();
   }
 
   removeNewImage(index: number) {
     this.selectedFiles.splice(index, 1);
     this.imagePreviews.splice(index, 1);
+    this.cdr.detectChanges();
   }
 
   refreshData() {
