@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError, retry, timer } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 function handleHttpError(context: string) {
@@ -36,6 +36,7 @@ export class AdminService {
 
     getDashboardMetrics(): Observable<any> {
         return this.http.get(`${this.apiUrl}/metrics`, { headers: this.getHeaders() }).pipe(
+            retry({ count: 1, delay: () => timer(1000) }),
             catchError(handleHttpError('Metrics'))
         );
     }
@@ -45,12 +46,14 @@ export class AdminService {
             headers: this.getHeaders(),
             params: { status }
         }).pipe(
+            retry({ count: 1, delay: () => timer(1000) }),
             catchError(handleHttpError(`List ${status}`))
         );
     }
 
     getPendingVendors(): Observable<any[]> {
         return this.http.get<any[]>(`${this.apiUrl}/vendors/pending`, { headers: this.getHeaders() }).pipe(
+            retry({ count: 1, delay: () => timer(1000) }),
             catchError(handleHttpError('Pending'))
         );
     }

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ViewChild, ElementRef, AfterViewInit, OnDestroy, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, ViewChild, ElementRef, AfterViewInit, OnDestroy, computed, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
@@ -27,6 +27,7 @@ export class AdminDashboard implements OnInit, OnDestroy {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef);
 
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
 
@@ -332,10 +333,12 @@ export class AdminDashboard implements OnInit, OnDestroy {
         next: (data) => {
           this.vendors.set(data);
           this.loading.set(false);
+          this.cdr.detectChanges();
         },
         error: (err) => {
           this.error.set('Failed to load pending submissions.');
           this.loading.set(false);
+          this.cdr.detectChanges();
         }
       });
     } else {
@@ -343,10 +346,12 @@ export class AdminDashboard implements OnInit, OnDestroy {
         next: (data) => {
           this.vendors.set(data);
           this.loading.set(false);
+          this.cdr.detectChanges();
         },
         error: (err) => {
           this.error.set(`Failed to load ${this.auditStatus()} listings.`);
           this.loading.set(false);
+          this.cdr.detectChanges();
         }
       });
     }
@@ -356,9 +361,11 @@ export class AdminDashboard implements OnInit, OnDestroy {
     this.adminService.getDashboardMetrics().subscribe({
       next: (data) => {
         this.metrics.set(data);
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Audit: Failed to load metrics', err);
+        this.cdr.detectChanges();
       }
     });
   }
