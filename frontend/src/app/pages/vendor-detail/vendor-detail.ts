@@ -193,7 +193,7 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
 
   openDirections() {
     const coords = this.vendor?.location?.coordinates;
-    if (!coords) return;
+    if (!coords || !this.vendor) return;
 
     let lat: number | undefined;
     let lng: number | undefined;
@@ -207,7 +207,10 @@ export class VendorDetail implements OnInit, AfterViewInit, OnDestroy {
 
     if (lat === undefined || lng === undefined) return;
 
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    // By including the name in the query, Google Maps will "snap" to the specific business 
+    // even if the coordinate provided has a minor offset from OpenStreetMap.
+    const query = encodeURIComponent(`${this.vendor.name}, ${lat},${lng}`);
+    const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
     window.open(url, '_blank');
   }
 
